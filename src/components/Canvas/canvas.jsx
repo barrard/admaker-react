@@ -119,7 +119,7 @@ function chunkSegment(segment) {
   return timedSentenceChunks;
 }
 
-function wordBreakDown(textSegments, sourceVideoRef) {
+function wordBreakDown(textSegments, sourceVideoRef, canvasCtx) {
   const timelyWords = [];
   textSegments.forEach((segment, iSeg) => {
     const { text, start, end } = segment;
@@ -131,6 +131,7 @@ function wordBreakDown(textSegments, sourceVideoRef) {
 
     timedSentenceChunks.forEach((textSentence, i) => {
       const { wordTimes, sentenceTextLines, start, end } = textSentence;
+
       let wordIndex = 0;
       let x = 30;
       let y = 30;
@@ -138,17 +139,23 @@ function wordBreakDown(textSegments, sourceVideoRef) {
         //should return ex and why coords?
         console.log(line);
         line = line.trim();
+        const lineWidth = canvasCtx.measureText(line).width;
+        const canvasWidth = canvasCtx.canvas.width;
+        const textStartOffset = (canvasWidth - lineWidth) / 2;
+        let nextWordStartOffset = 0;
+        debugger;
         const lineWords = line.split(" ");
-        const wordsThusFar = wordTimes.filter((wd) => wd.start < (parseFloat(sourceVideoRef.current.currentTime) || 0));
-        const wordsData = wordsThusFar.map((wtf, iWtf) => {
+        // const wordsThusFar = wordTimes.filter((wd) => wd.start < (parseFloat(sourceVideoRef.current.currentTime) || 0));
+        const wordsData = wordTimes.map((wtf, iWtf) => {
           const _y = iLine * y;
-          const _x = 30; //TODOOOOO
+          const _x = textStartOffset + nextWordStartOffset; // * iWtf; //TODOOOOO
           timelyWords.push({
             x: _x,
             y: _y,
             word: wtf.word,
-            color: iWtf == wordsThusFar.length - 1 ? "red" : "white",
+            // color: iWtf == wordsThusFar.length - 1 ? "red" : "white",
           });
+          nextWordStartOffset += canvasCtx.measureText(wtf.word).width;
         });
       });
 
@@ -234,7 +241,7 @@ export default function canvas(props) {
 
       //TODO
       //TODO
-      const wordSegments = wordBreakDown(wordsData.segments, sourceVideoRef);
+      const wordSegments = wordBreakDown(wordsData.segments, sourceVideoRef, canvasCtx);
       debugger;
       drawVideo();
       sourceVideoRef.current.addEventListener("timeupdate", (event) => {
