@@ -25,13 +25,21 @@ export default function Video(props) {
 
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
+        console.log(files);
 
         // Update selected video files
         setSelectedVideoFiles(files);
 
         // Generate preview URLs for each file
-        const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
-        setPreviewUrls(newPreviewUrls);
+        const newPreviewUrls = files.map((file) => {
+            file.videoUrl = URL.createObjectURL(file);
+            debugger;
+            return file;
+        });
+        setPreviewUrls((previewUrls) => [...previewUrls, ...newPreviewUrls]);
+        if (!previewVideo && newPreviewUrls.length > 0) {
+            setPreviewVideo(newPreviewUrls[0].videoUrl);
+        }
     };
 
     const clearVideoFiles = () => {
@@ -66,9 +74,9 @@ export default function Video(props) {
                         className="flex flex-wrap justify-around p-4"
                         id="videoFilesList"
                     >
-                        {previewUrls.map((url, index) => (
-                            <React.Fragment key={index}>
-                                <VideoCardItem url={url} />
+                        {previewUrls.map((file) => (
+                            <React.Fragment key={file.name}>
+                                <VideoCardItem file={file} />
                             </React.Fragment>
                             // <video
                             //     className="w-28 m-2"

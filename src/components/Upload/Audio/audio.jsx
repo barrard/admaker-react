@@ -59,6 +59,7 @@ export default function Audio(props) {
 
                     if (selectedFiles.length) {
                         let audiosToUpload = [];
+                        let audioFilesData = [];
                         const formData = new FormData();
 
                         for (let i = 0; i < selectedFiles.length; i++) {
@@ -71,12 +72,32 @@ export default function Audio(props) {
                                 });
                                 formData.append("audioFiles", selectedFiles[i]);
 
+                                const { name, size, type, lastModified } =
+                                    selectedFiles[i];
+                                debugger;
+                                audioFilesData.push({
+                                    originalFileName: name,
+                                    source: e.target.result,
+                                    size,
+                                    lastModified,
+                                    type,
+                                });
+                                // console.log(YOUR_AUDIO_FILES);
+                                // setYOUR_AUDIO_FILES((files) => [
+                                //     ...files,
+                                //     {
+                                //         originalFileName: name,
+                                //         source: e.target.result,
+                                //         size,
+                                //         lastModified,
+                                //         type,
+                                //     },
+                                // ]);
                                 // If all files are processed, update your UI or handle the data
                                 if (
                                     audiosToUpload.length ===
                                     selectedFiles.length
                                 ) {
-                                    debugger;
                                     console.log(
                                         "All files loaded:",
                                         audiosToUpload
@@ -92,10 +113,24 @@ export default function Audio(props) {
                                     );
                                     setUploadingAudioFiles(false);
 
-                                    setYOUR_AUDIO_FILES([
-                                        ...YOUR_AUDIO_FILES,
-                                        ...audioFilesUploaded,
-                                    ]);
+                                    debugger;
+
+                                    const audioDatas = audioFilesUploaded.map(
+                                        (af) => {
+                                            let file = audioFilesData.find(
+                                                (f) =>
+                                                    f.originalFileName ===
+                                                    af.originalFileName
+                                            );
+                                            return { ...file, ...af };
+                                        }
+                                    );
+                                    setYOUR_AUDIO_FILES((YOUR_AUDIO_FILES) => {
+                                        return [
+                                            ...YOUR_AUDIO_FILES,
+                                            ...audioDatas,
+                                        ];
+                                    });
                                 }
                             };
 
@@ -114,7 +149,6 @@ export default function Audio(props) {
 
             <div id="audioFilesList">
                 {YOUR_AUDIO_FILES.map((audioFile, i) => {
-                    console.log(audioFile);
                     return (
                         <React.Fragment key={audioFile.originalFileName}>
                             <AudioCardItem audioFile={audioFile} />

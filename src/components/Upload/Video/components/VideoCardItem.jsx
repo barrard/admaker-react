@@ -14,7 +14,7 @@ import { BasicBtn } from "../../../Button";
 
 import { CanvasContext } from "../../../Context/CanvasContext";
 
-export default function VideoCardItem(url = {}) {
+export default function VideoCardItem({ file = {} }) {
     const { YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES } = useContext(CanvasContext);
     const [enabledVideo, setEnabledVideo] = useState(true);
 
@@ -24,6 +24,7 @@ export default function VideoCardItem(url = {}) {
             YOUR_VIDEO_FILES.filter((af) => af.originalFileName != fileName)
         );
     }
+    console.log(file);
 
     return (
         <Card className="border border-green-500 relative">
@@ -36,12 +37,17 @@ export default function VideoCardItem(url = {}) {
                 className={"border border-red-300 p-1"}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <CardTitle className="text-sm font-semibold">
-                    {"videoFile.originalFileName"}
+                <CardTitle className="text- font-semibold">
+                    {file.name}
                 </CardTitle>
 
                 <CardDescription className="overflow-hidden">
-                    <video className="w-28 m-2" src={url} width="75" controls />
+                    <video
+                        className="w-28 m-2"
+                        src={file.videoUrl}
+                        // width="75"
+                        controls
+                    />
                 </CardDescription>
             </CardHeader>
             {/* <CardContent>
