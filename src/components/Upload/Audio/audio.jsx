@@ -147,7 +147,7 @@ export default function Audio(props) {
                 text="Clear Audio Files"
             />
 
-            <div id="audioFilesList">
+            <div className=" py-4" id="audioFilesList">
                 {YOUR_AUDIO_FILES.map((audioFile, i) => {
                     return (
                         <React.Fragment key={audioFile.originalFileName}>

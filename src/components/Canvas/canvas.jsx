@@ -11,10 +11,7 @@ const wordsData = {
             start: 0.0,
             end: 3.8,
             text: " Food manufacturing wworkers are needed. No experience is required.",
-            tokens: [
-                50364, 11675, 11096, 5600, 366, 2978, 13, 883, 1752, 307, 4739,
-                13, 50564,
-            ],
+            tokens: [50364, 11675, 11096, 5600, 366, 2978, 13, 883, 1752, 307, 4739, 13, 50564],
             temperature: 0.0,
             avg_logprob: -0.21428402732400334,
             compression_ratio: 1.2869565217391303,
@@ -82,10 +79,7 @@ const wordsData = {
             start: 4.38,
             end: 9.2,
             text: " Listen to music while you work. Full time or part time. Find local positions here.",
-            tokens: [
-                50564, 7501, 281, 1318, 1339, 291, 589, 13, 13841, 565, 420,
-                644, 565, 13, 11809, 2654, 8432, 510, 13, 50864,
-            ],
+            tokens: [50564, 7501, 281, 1318, 1339, 291, 589, 13, 13841, 565, 420, 644, 565, 13, 11809, 2654, 8432, 510, 13, 50864],
             temperature: 0.0,
             avg_logprob: -0.21428402732400334,
             compression_ratio: 1.2869565217391303,
@@ -210,10 +204,22 @@ export default function canvas(props) {
         textStrokeThickness,
         videoDuration,
         wordColor,
+        loadedVideo,
+        setLoadedVideo,
+        loadedMetaData,
+        setLoadedMetaData,
+        withTextStroke,
+        withBackground,
+
+        withSingleWord,
+
+        withWordAnimation,
+        withActiveWordColor,
+        isPlaying,
     } = context;
 
-    const [loadedVideo, setLoadedVideo] = useState(false);
-    const [loadedMetaData, setLoadedMetaData] = useState(false);
+    // const [loadedVideo, setLoadedVideo] = useState(false);
+    // const [loadedMetaData, setLoadedMetaData] = useState(false);
 
     const outputCanvasRef = useRef();
 
@@ -227,33 +233,28 @@ export default function canvas(props) {
     }, [outputCanvasRef.current, canvasCtx]);
 
     useEffect(() => {
-        if (
-            loadedVideo &&
-            outputCanvasRef.current &&
-            canvasCtx &&
-            loadedMetaData &&
-            sourceVideoRef.current
-        ) {
+        if (loadedVideo && outputCanvasRef.current && canvasCtx && loadedMetaData && sourceVideoRef.current) {
             const canvas = outputCanvasRef.current;
             canvas.width = sourceVideoRef.current.videoWidth * 0.5; //* 1.5;
             canvas.height = sourceVideoRef.current.videoHeight * 0.5; //* 1.5;
             console.log(canvas.width, canvas.height);
             console.log("CALLED ONCE");
 
-            const wordSegments = wordBreakDown(
-                wordsData.segments,
-                canvasCtx,
-                context
-            );
+            const wordSegments = wordBreakDown(wordsData.segments, canvasCtx, context);
             console.log({ wordSegments });
-
+            debugger;
+            // if (sourceVideoRef.current.paused) {
+            //     return;
+            // } else if (sourceVideoRef.current.ended) {
+            //     return;
+            // } else {
             drawVideo(wordSegments);
-            sourceVideoRef.current.addEventListener("timeupdate", (event) => {
-                onTrackedVideoFrame(
-                    sourceVideoRef.current.currentTime,
-                    sourceVideoRef.current.duration
-                );
-            });
+            // }
+            function onTimeUpdate(event) {
+                console.log(event);
+                onTrackedVideoFrame(sourceVideoRef.current.currentTime, sourceVideoRef.current.duration);
+            }
+            sourceVideoRef.current.addEventListener("timeupdate", onTimeUpdate);
 
             function onTrackedVideoFrame(currentTime, duration) {
                 setCurrentVideoTime(currentTime.toFixed(1)); //Change #current to currentTime
@@ -261,21 +262,22 @@ export default function canvas(props) {
             }
 
             function drawVideo(wordSegments) {
-                canvasCtx.drawImage(
-                    sourceVideoRef.current,
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
+                debugger;
+                if (sourceVideoRef.current.paused) {
+                    canvasCtx.drawImage(sourceVideoRef.current, 0, 0, canvas.width, canvas.height);
+                    drawText(wordSegments, sourceVideoRef);
+                    return;
+                }
+                if (sourceVideoRef.current.ended) {
+                    return;
+                }
+                canvasCtx.drawImage(sourceVideoRef.current, 0, 0, canvas.width, canvas.height);
                 drawText(wordSegments, sourceVideoRef);
                 requestAnimationFrame(() => drawVideo(wordSegments));
             }
             // EaseInOutCubic function for smooth animation
             function easeInOutCubic(t) {
-                return t < 0.5
-                    ? 4 * t * t * t
-                    : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+                return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
             }
 
             function drawRoundedRect(x, y, width, height, radius) {
@@ -284,13 +286,7 @@ export default function canvas(props) {
                 canvasCtx.lineTo(x, y + height - radius);
                 canvasCtx.arcTo(x, y + height, x + radius, y + height, radius);
                 canvasCtx.lineTo(x + width - radius, y + height);
-                canvasCtx.arcTo(
-                    x + width,
-                    y + height,
-                    x + width,
-                    y + height - radius,
-                    radius
-                );
+                canvasCtx.arcTo(x + width, y + height, x + width, y + height - radius, radius);
                 canvasCtx.lineTo(x + width, y + radius);
                 canvasCtx.arcTo(x + width, y, x + width - radius, y, radius);
                 canvasCtx.lineTo(x + radius, y);
@@ -299,14 +295,7 @@ export default function canvas(props) {
             }
             function drawText(_wordsData, sourceVideoRef) {
                 const currentWords = _wordsData.filter((wd) => {
-                    return (
-                        wd.sentenceEnd >
-                            (parseFloat(sourceVideoRef.current.currentTime) ||
-                                0) &&
-                        wd.sentenceStart <
-                            (parseFloat(sourceVideoRef.current.currentTime) ||
-                                0)
-                    );
+                    return wd.sentenceEnd > (parseFloat(sourceVideoRef.current.currentTime) || 0) && wd.sentenceStart < (parseFloat(sourceVideoRef.current.currentTime) || 0);
                 });
                 // Set font properties
                 canvasCtx.font = `${textDecoration} ${fontSize} ${fontFamily}`;
@@ -315,19 +304,12 @@ export default function canvas(props) {
 
                 // Loop through each word and draw it with the appropriate color
                 currentWords.forEach((wordData, index) => {
+                    debugger;
                     // Calculate the position for drawing each word
-                    let { x, y, wordWidth, fontHeight, wordWidthSpace } =
-                        wordData;
-                    if (
-                        sourceVideoRef.current.currentTime > wordData.start &&
-                        sourceVideoRef.current.currentTime < wordData.end
-                    ) {
+                    let { x, y, wordWidth, fontHeight, wordWidthSpace } = wordData;
+                    if (sourceVideoRef.current.currentTime > wordData.start && sourceVideoRef.current.currentTime < wordData.end) {
                         // Animation calculations
-                        let animProgress =
-                            (sourceVideoRef.current.currentTime -
-                                wordData.start) /
-                            (wordData.nextWordStart ||
-                                wordData.end - wordData.start);
+                        let animProgress = (sourceVideoRef.current.currentTime - wordData.start) / (wordData.nextWordStart || wordData.end - wordData.start);
                         animProgress = Math.min(animProgress, 1); // Clamp to 0-1
 
                         // Modified scaling for a grow-and-shrink effect
@@ -337,66 +319,54 @@ export default function canvas(props) {
                         canvasCtx.save();
 
                         // Translate to the word's center
-                        canvasCtx.translate(
-                            x + wordWidthSpace / 2,
-                            y + fontHeight / 2
-                        );
+                        canvasCtx.translate(x + wordWidthSpace / 2, y + fontHeight / 2);
 
-                        // Apply the scaling
-                        canvasCtx.scale(scale, scale);
+                        if (withWordAnimation) {
+                            // Apply the scaling
+                            canvasCtx.scale(scale, scale);
+                        }
 
                         // Draw a colored background rectangle
-                        canvasCtx.fillStyle = backgroundColor; // Or use your desired color
-                        // Draw rounded rectangle background
-                        const padding = 4; // Adjust as needed
-                        const cornerRadius = 5; // Adjust for the desired roundness
-                        // Styling for outline (black border)
-                        canvasCtx.lineWidth = textStrokeThickness;
-                        canvasCtx.strokeStyle = strokeColor;
+                        if (withBackground) {
+                            canvasCtx.fillStyle = backgroundColor; // Or use your desired color
+                            // Draw rounded rectangle background
+                            const padding = 4; // Adjust as needed
+                            const cornerRadius = 5; // Adjust for the desired roundness
+                            // Styling for outline (black border)
+                            canvasCtx.lineWidth = textStrokeThickness;
+                            canvasCtx.strokeStyle = strokeColor;
 
-                        drawRoundedRect(
-                            -wordWidthSpace / 2 -
-                                (padding + canvasCtx.lineWidth),
-                            -fontHeight / 2 - padding,
-                            wordWidthSpace + (padding + canvasCtx.lineWidth),
-                            fontHeight + 2 * padding,
-                            cornerRadius
-                        );
-                        canvasCtx.fill();
+                            drawRoundedRect(
+                                -wordWidthSpace / 2 - (padding + canvasCtx.lineWidth),
+                                -fontHeight / 2 - padding,
+                                wordWidthSpace + (padding + canvasCtx.lineWidth),
+                                fontHeight + 2 * padding,
+                                cornerRadius
+                            );
+                            canvasCtx.fill();
+                        }
 
                         canvasCtx.lineJoin = "round";
 
-                        if (textStrokeThickness) {
-                            canvasCtx.strokeText(
-                                wordData.word,
-                                -wordWidth / 2,
-                                -fontHeight / 2
-                            );
+                        if (textStrokeThickness && withTextStroke) {
+                            canvasCtx.strokeText(wordData.word, -wordWidth / 2, -fontHeight / 2);
                         }
 
                         // Set red color for the word "Text"
-                        canvasCtx.fillStyle = activeWordColor;
+                        canvasCtx.fillStyle = withActiveWordColor ? activeWordColor : wordColor;
                         // Draw text (adjust as needed, depending on your textBaseline settings)
-                        canvasCtx.fillText(
-                            wordData.word,
-                            -wordWidth / 2,
-                            -fontHeight / 2
-                        );
+                        canvasCtx.fillText(wordData.word, -wordWidth / 2, -fontHeight / 2);
 
                         canvasCtx.restore();
-                    } else if (
-                        sourceVideoRef.current.currentTime > wordData.start &&
-                        sourceVideoRef.current.currentTime > wordData.end
-                    ) {
+                    } else if ((sourceVideoRef.current.currentTime > wordData.start && sourceVideoRef.current.currentTime > wordData.end) || !withSingleWord) {
                         // Set red color for the word "Text"
                         canvasCtx.fillStyle = wordColor;
 
-                        // Styling for outline (black border)
-                        canvasCtx.lineWidth = textStrokeThickness; // Adjust border thickness as desired
-                        canvasCtx.strokeStyle = strokeColor;
-                        canvasCtx.lineJoin = "round";
-
-                        if (textStrokeThickness) {
+                        if (textStrokeThickness && withTextStroke) {
+                            // Styling for outline (black border)
+                            canvasCtx.lineWidth = textStrokeThickness; // Adjust border thickness as desired
+                            canvasCtx.strokeStyle = strokeColor;
+                            canvasCtx.lineJoin = "round";
                             canvasCtx.strokeText(wordData.word, x, y);
                         }
 
@@ -413,6 +383,10 @@ export default function canvas(props) {
                     // x += canvasCtx.measureText(wordData.word + " ").width; // Include space after each word
                 });
             }
+
+            return () => {
+                sourceVideoRef.current.removeEventListener("timeupdate", onTimeUpdate);
+            };
         }
     }, [
         loadedVideo,
@@ -420,12 +394,20 @@ export default function canvas(props) {
         outputCanvasRef?.current,
         canvasCtx,
         sourceVideoRef?.current,
+        sourceVideoRef?.current?.ended,
+        sourceVideoRef?.current?.paused,
         wordColor,
         backgroundColor,
         activeWordColor,
         strokeColor,
         textStrokeThickness,
         setTextStrokeThickness,
+        withTextStroke,
+        withBackground,
+        withSingleWord,
+        withActiveWordColor,
+
+        withWordAnimation,
     ]);
 
     return (
@@ -433,7 +415,7 @@ export default function canvas(props) {
             <h2>canvas</h2>
             <canvas ref={outputCanvasRef} id="outputCanvas"></canvas>
 
-            {previewVideo && (
+            {/* {previewVideo && (
                 <div
                     style={
                         {
@@ -467,7 +449,7 @@ export default function canvas(props) {
                         src={previewVideo}
                     ></video>
                 </div>
-            )}
+            )} */}
         </div>
     );
 }

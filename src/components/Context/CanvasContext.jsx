@@ -16,6 +16,11 @@ function CanvasContextProvider(props) {
     const [strokeColor, setStrokeColor] = useState("black");
     const [backgroundColor, setBackgroundColor] = useState("green");
     const [textStrokeThickness, setTextStrokeThickness] = useState(5);
+    const [withTextStroke, setWithTextStroke] = useState(true);
+    const [withBackground, setWithBackground] = useState(true);
+    const [withSingleWord, setWithSingleWord] = useState(true);
+    const [withWordAnimation, setWithWordAnimation] = useState(true);
+    const [withActiveWordColor, setWithActiveWordColor] = useState(true);
 
     const [yourAudioFiles, setYourAudioFiles] = useState([]);
     const [yourVideoFiles, setYourVideoFiles] = useState([]);
@@ -24,12 +29,12 @@ function CanvasContextProvider(props) {
 
     const [previewVideo, setPreviewVideo] = useState(null);
     const [previewAudio, setPreviewAudio] = useState(null);
-    const [YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES] = useState(
-        readFromLocalStorage("audioFiles", [])
-    );
-    const [YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES] = useState(
-        readFromLocalStorage("videoFiles", [])
-    );
+    const [YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES] = useState(readFromLocalStorage("audioFiles", []));
+    const [YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES] = useState(readFromLocalStorage("videoFiles", []));
+
+    const [loadedVideo, setLoadedVideo] = useState(false);
+    const [loadedMetaData, setLoadedMetaData] = useState(false);
+
     const audioFileInputRef = useRef();
 
     const sourceVideoRef = useRef();
@@ -37,6 +42,10 @@ function CanvasContextProvider(props) {
     const baseUrl = "http://localhost:3001";
 
     const GLOBAL = {
+        loadedVideo,
+        setLoadedVideo,
+        loadedMetaData,
+        setLoadedMetaData,
         baseUrl,
         previewVideo,
         setPreviewVideo,
@@ -82,12 +91,22 @@ function CanvasContextProvider(props) {
         setYOUR_AUDIO_FILES,
         YOUR_VIDEO_FILES,
         setYOUR_VIDEO_FILES,
+
+        withTextStroke,
+        setWithTextStroke,
+        withSingleWord,
+        setWithSingleWord,
+
+        withBackground,
+        setWithBackground,
+
+        withWordAnimation,
+        setWithWordAnimation,
+
+        withActiveWordColor,
+        setWithActiveWordColor,
     };
-    return (
-        <CanvasContext.Provider value={GLOBAL}>
-            {props.children}
-        </CanvasContext.Provider>
-    );
+    return <CanvasContext.Provider value={GLOBAL}>{props.children}</CanvasContext.Provider>;
 }
 
 export { CanvasContextProvider, CanvasContext };

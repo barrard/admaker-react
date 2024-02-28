@@ -1,11 +1,16 @@
 import React, { useContext, useState } from "react";
 import { BasicBtn } from "../../Button";
-import { VideoInput } from "../../Input";
+// import { TextInput } from "../../Input";
 import { CanvasContext } from "../../Context/CanvasContext";
-import VideoCardItem from "./components/VideoCardItem";
+import TextCardItem from "./components/TextCardItem";
 
-export default function Video(props) {
-    const { previewVideo, setPreviewVideo, selectedVideoFiles, setSelectedVideoFiles } = useContext(CanvasContext);
+export default function Text(props) {
+    const {
+        previewText,
+        setPreviewText,
+        selectedTextFiles,
+        setSelectedTextFiles,
+    } = useContext(CanvasContext);
 
     const [previewUrls, setPreviewUrls] = useState([]); // State to manage preview URLs
 
@@ -23,45 +28,53 @@ export default function Video(props) {
         console.log(files);
 
         // Update selected video files
-        setSelectedVideoFiles(files);
+        setSelectedTextFiles(files);
 
         // Generate preview URLs for each file
         const newPreviewUrls = files.map((file) => {
             file.videoUrl = URL.createObjectURL(file);
+            debugger;
             return file;
         });
         setPreviewUrls((previewUrls) => [...previewUrls, ...newPreviewUrls]);
-        if (!previewVideo && newPreviewUrls.length > 0) {
-            setPreviewVideo(newPreviewUrls[0].videoUrl);
+        if (!previewText && newPreviewUrls.length > 0) {
+            setPreviewText(newPreviewUrls[0].videoUrl);
         }
     };
 
-    const clearVideoFiles = () => {
-        setSelectedVideoFiles([]);
+    const clearTextFiles = () => {
+        setSelectedTextFiles([]);
         setPreviewUrls([]); // Clear previews
     };
 
     return (
         <div>
-            <h1>Video Upload</h1>
-            <VideoInput
+            <h1>Text Upload</h1>
+            {/* <TextInput
                 onChange={function (e) {
                     handleFileChange(e);
                     // var media = URL.createObjectURL(e.target.files[0]);
-                    // setPreviewVideo(media);
+                    // setPreviewText(media);
                 }}
-            />
+            /> */}
             {/* <br /> */}
-            {/* <BasicBtn id="uploadVideoButton" text="Upload Video Files" /> */}
+            {/* <BasicBtn id="uploadTextButton" text="Upload Text Files" /> */}
             <br />
-            <BasicBtn id="clearVideoFilesList" text="Clear video Files" onClick={clearVideoFiles} />
+            <BasicBtn
+                id="clearTextFilesList"
+                text="Clear video Files"
+                onClick={clearTextFiles}
+            />
             {/* Display Previews */}
             {previewUrls.length > 0 && (
                 <div>
-                    <div className="flex flex-wrap justify-around py-4" id="videoFilesList">
+                    <div
+                        className="flex flex-wrap justify-around py-4"
+                        id="videoFilesList"
+                    >
                         {previewUrls.map((file) => (
                             <React.Fragment key={file.name}>
-                                <VideoCardItem file={file} />
+                                <TextCardItem file={file} />
                             </React.Fragment>
                             // <video
                             //     className="w-28 m-2"

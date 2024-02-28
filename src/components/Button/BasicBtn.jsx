@@ -8,9 +8,22 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function BasicBtn(props) {
-    const { text, onClick, title } = props;
+    const {
+        text,
+        onClick,
+        title,
+        style = {},
+        className = "",
+        disable = false,
+    } = props;
     const MyButton = (
-        <Button onClick={onClick} variant="outline">
+        <Button
+            disabled={disable}
+            className={className}
+            style={style}
+            onClick={onClick}
+            variant="outline"
+        >
             {text}
         </Button>
     );

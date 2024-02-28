@@ -17,7 +17,7 @@ export default function NumberSlider({
     };
     return (
         <>
-            <div className="title">{label}</div>
+            <div className="title">{label + `(${value})`}</div>
 
             <Slider
                 min={min}
