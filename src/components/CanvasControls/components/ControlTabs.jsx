@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function ControlTabs({ tabs = [], contents = [] }) {
+export default function ControlTabs({ tabs = [], contents = [], setTab, tab }) {
+    const onTabChange = (value) => {
+        setTab(value);
+    };
+
     return (
-        <Tabs
-            defaultValue="custom"
-            className="w-[400px] border border-green-500"
-        >
+        <Tabs value={tab} onValueChange={onTabChange} defaultValue={tab} className="w-[400px] border border-green-500">
             <TabsList>
                 {tabs.map((tab) => {
                     const { name, value } = tab;

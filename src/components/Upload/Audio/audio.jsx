@@ -1,21 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { BasicBtn } from "../../Button";
 import { AudioInput } from "../../Input";
-import { CanvasContext } from "../../Context/CanvasContext";
+import CanvasContext from "../../Context/CanvasContext";
 import { readFromLocalStorage, writeToLocalStorage } from "../../../utils";
 import AudioCardItem from "./components/AudioCardItem";
 export default function Audio(props) {
-    const {
-        previewAudio,
-        setPreviewAudio,
-        audioElRef,
-        audioFileInputRef,
-        baseUrl,
-        YOUR_AUDIO_FILES,
-        setYOUR_AUDIO_FILES,
-        YOUR_VIDEO_FILES,
-        setYOUR_VIDEO_FILES,
-    } = useContext(CanvasContext);
+    const { previewAudio, setPreviewAudio, audioElRef, audioFileInputRef, baseUrl, YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES, YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES } =
+        useContext(CanvasContext);
 
     const [uploadingAudioFiles, setUploadingAudioFiles] = useState(false);
 
@@ -72,8 +63,7 @@ export default function Audio(props) {
                                 });
                                 formData.append("audioFiles", selectedFiles[i]);
 
-                                const { name, size, type, lastModified } =
-                                    selectedFiles[i];
+                                const { name, size, type, lastModified } = selectedFiles[i];
                                 debugger;
                                 audioFilesData.push({
                                     originalFileName: name,
@@ -94,42 +84,23 @@ export default function Audio(props) {
                                 //     },
                                 // ]);
                                 // If all files are processed, update your UI or handle the data
-                                if (
-                                    audiosToUpload.length ===
-                                    selectedFiles.length
-                                ) {
-                                    console.log(
-                                        "All files loaded:",
-                                        audiosToUpload
-                                    );
+                                if (audiosToUpload.length === selectedFiles.length) {
+                                    console.log("All files loaded:", audiosToUpload);
                                     // Do something with the audiosToUpload array
-                                    audioElRef.current.src =
-                                        audiosToUpload[0].source;
+                                    audioElRef.current ? (audioElRef.current.src = audiosToUpload[0].source) : null;
 
                                     setUploadingAudioFiles(true);
-                                    const audioFilesUploaded = await uploadFile(
-                                        formData,
-                                        "/uploads/audio"
-                                    );
+                                    const audioFilesUploaded = await uploadFile(formData, "/uploads/audio");
                                     setUploadingAudioFiles(false);
 
                                     debugger;
 
-                                    const audioDatas = audioFilesUploaded.map(
-                                        (af) => {
-                                            let file = audioFilesData.find(
-                                                (f) =>
-                                                    f.originalFileName ===
-                                                    af.originalFileName
-                                            );
-                                            return { ...file, ...af };
-                                        }
-                                    );
+                                    const audioDatas = audioFilesUploaded.map((af) => {
+                                        let file = audioFilesData.find((f) => f.originalFileName === af.originalFileName);
+                                        return { ...file, ...af };
+                                    });
                                     setYOUR_AUDIO_FILES((YOUR_AUDIO_FILES) => {
-                                        return [
-                                            ...YOUR_AUDIO_FILES,
-                                            ...audioDatas,
-                                        ];
+                                        return [...YOUR_AUDIO_FILES, ...audioDatas];
                                     });
                                 }
                             };
@@ -141,11 +112,7 @@ export default function Audio(props) {
             />
 
             <br />
-            <BasicBtn
-                id="clearAudioFilesList"
-                onClick={clearAudioFiles}
-                text="Clear Audio Files"
-            />
+            <BasicBtn id="clearAudioFilesList" onClick={clearAudioFiles} text="Clear Audio Files" />
 
             <div className=" py-4" id="audioFilesList">
                 {YOUR_AUDIO_FILES.map((audioFile, i) => {

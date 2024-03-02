@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { BasicBtn } from "../../Button";
 import { VideoInput } from "../../Input";
-import { CanvasContext } from "../../Context/CanvasContext";
+import CanvasContext from "../../Context/CanvasContext";
 import VideoCardItem from "./components/VideoCardItem";
 
 export default function Video(props) {

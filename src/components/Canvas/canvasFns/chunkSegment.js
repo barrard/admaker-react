@@ -51,9 +51,7 @@ export default function chunkSegment(segment, nextSegment, canvasCtx, context) {
         }
         let currentLine = timedSentence.sentenceTextLines.slice(-1)[0];
         currentLine += word;
-        timedSentence.sentenceTextLines[
-            timedSentence.sentenceTextLines.length - 1
-        ] = currentLine;
+        timedSentence.sentenceTextLines[timedSentence.sentenceTextLines.length - 1] = currentLine;
         timedSentence.wordTimes.push({
             word: word.trim(),
             start,
@@ -79,7 +77,7 @@ export default function chunkSegment(segment, nextSegment, canvasCtx, context) {
                 lastWord.end = end;
             }
 
-            timedSentenceChunks.push(timedSentence);
+            timedSentenceChunks.push({ ...timedSentence });
 
             //new sentence
             timedSentence = {

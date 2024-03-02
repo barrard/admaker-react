@@ -1,18 +1,11 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
 import { Trash2, Play, Pause } from "lucide-react";
 import { BasicBtn } from "../../../Button";
 
-import { CanvasContext } from "../../../Context/CanvasContext";
+import CanvasContext from "../../../Context/CanvasContext";
 
 export default function AudioCardItem({ audioFile = {} }) {
     const audioCardElRef = useRef();
@@ -23,9 +16,7 @@ export default function AudioCardItem({ audioFile = {} }) {
     const [currentTime, setCurrentTime] = useState(0);
     function removeAudioFile(fileName) {
         console.log("Remove  " + fileName);
-        setYOUR_AUDIO_FILES(
-            YOUR_AUDIO_FILES.filter((af) => af.originalFileName != fileName)
-        );
+        setYOUR_AUDIO_FILES(YOUR_AUDIO_FILES.filter((af) => af.originalFileName != fileName));
     }
 
     const handleAudioEnded = () => {
@@ -42,37 +33,19 @@ export default function AudioCardItem({ audioFile = {} }) {
     useEffect(() => {
         if (!audioCardElRef.current) return;
         audioCardElRef.current?.addEventListener("ended", handleAudioEnded);
-        audioCardElRef.current?.addEventListener(
-            "timeupdate",
-            handleTimeUpdate
-        );
+        audioCardElRef.current?.addEventListener("timeupdate", handleTimeUpdate);
 
         return () => {
-            audioCardElRef.current?.removeEventListener(
-                "ended",
-                handleAudioEnded
-            );
-            audioCardElRef.current?.removeEventListener(
-                "timeupdate",
-                handleTimeUpdate
-            );
+            audioCardElRef.current?.removeEventListener("ended", handleAudioEnded);
+            audioCardElRef.current?.removeEventListener("timeupdate", handleTimeUpdate);
         };
     }, [audioCardElRef.current]);
 
     return (
         <Card className="border border-green-500 relative">
-            <Switch
-                className="top-1 right-1 absolute"
-                checked={enabledAudio}
-                onCheckedChange={() => setEnabledAudio(!enabledAudio)}
-            />
-            <CardHeader
-                className={"border border-red-300 p-1"}
-                onClick={() => setIsExpanded(!isExpanded)}
-            >
-                <CardTitle className="text-sm font-semibold">
-                    {audioFile.originalFileName}
-                </CardTitle>
+            <Switch className="top-1 right-1 absolute" checked={enabledAudio} onCheckedChange={() => setEnabledAudio(!enabledAudio)} />
+            <CardHeader className={"border border-red-300 p-1"} onClick={() => setIsExpanded(!isExpanded)}>
+                <CardTitle className="text-sm font-semibold">{audioFile.originalFileName}</CardTitle>
 
                 {isExpanded && (
                     <CardDescription className="overflow-hidden">
@@ -109,24 +82,11 @@ export default function AudioCardItem({ audioFile = {} }) {
                                     audioCardElRef.current.play();
                                 }
                             }}
-                            text={
-                                !isPlaying ? (
-                                    <Play
-                                        className="text-green-500"
-                                        size={18}
-                                    />
-                                ) : (
-                                    <Pause
-                                        className="text-yellow-500"
-                                        size={18}
-                                    />
-                                )
-                            }
+                            text={!isPlaying ? <Play className="text-green-500" size={18} /> : <Pause className="text-yellow-500" size={18} />}
                             title="Play"
                         />
                         <span className="pl-2">
-                            {currentTime.toFixed(2)} :{" "}
-                            {audioCardElRef.current?.duration.toFixed(2)}
+                            {currentTime.toFixed(2)} : {audioCardElRef.current?.duration.toFixed(2)}
                         </span>
                         <audio src={audioFile.source} ref={audioCardElRef} />
                     </>

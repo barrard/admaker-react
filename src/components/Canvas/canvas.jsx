@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { CanvasContext } from "../Context/CanvasContext";
+import CanvasContext from "../Context/CanvasContext";
 import wordBreakDown from "./canvasFns/wordBreakDown";
 
 const wordsData = {
-    text: " Food manufacturing wworkers are needed. No experience is required. Listen to music while you work. Full time or part time. Find local positions here.",
+    text: " Food manufacturing workers are needed. No experience is required. Listen to music while you work. Full time or part time. Find local positions here.",
     segments: [
         {
             id: 0,
             seek: 0,
             start: 0.0,
             end: 3.8,
-            text: " Food manufacturing wworkers are needed. No experience is required.",
+            text: " Food manufacturing workers are needed. No experience is required.",
             tokens: [50364, 11675, 11096, 5600, 366, 2978, 13, 883, 1752, 307, 4739, 13, 50564],
             temperature: 0.0,
             avg_logprob: -0.21428402732400334,
@@ -30,7 +30,7 @@ const wordsData = {
                     probability: 0.9233144521713257,
                 },
                 {
-                    word: " wworkers",
+                    word: " workers",
                     start: 0.98,
                     end: 1.4,
                     probability: 0.9884375929832458,
@@ -185,12 +185,12 @@ export default function canvas(props) {
     const context = useContext(CanvasContext) || {};
     const {
         previewVideo,
-        activeWordColor,
-        backgroundColor,
+        // activeWordColor,
+        // backgroundColor,
         canvasCtx,
         currentVideoTime,
         fontFamily,
-        fontSize,
+        // fontSize,
         setCanvasCtx,
         setCurrentVideoTime,
         setFontFamily,
@@ -199,25 +199,44 @@ export default function canvas(props) {
         setTextStrokeThickness,
         setVideoDuration,
         sourceVideoRef,
-        strokeColor,
+        // strokeColor,
         textDecoration,
-        textStrokeThickness,
+        // textStrokeThickness,
         videoDuration,
-        wordColor,
+        // wordColor,
         loadedVideo,
         setLoadedVideo,
         loadedMetaData,
         setLoadedMetaData,
+        // withTextStroke,
+        // withBackground,
+
+        // withSingleWord,
+        wordSpace,
+        // withWordAnimation,
+        // withActiveWordColor,
+        isPlaying,
+        // lineHeight,
+
+        //
+        currentPrestSettings,
+        setCurrentPrestSettings,
+    } = context;
+    const {
+        wordColor,
+        presetName,
+        fontSize,
+        textStrokeThickness,
         withTextStroke,
+        strokeColor,
         withBackground,
-
+        backgroundColor,
         withSingleWord,
-
         withWordAnimation,
         withActiveWordColor,
-        isPlaying,
-    } = context;
-
+        activeWordColor,
+        lineHeight,
+    } = currentPrestSettings || {};
     // const [loadedVideo, setLoadedVideo] = useState(false);
     // const [loadedMetaData, setLoadedMetaData] = useState(false);
 
@@ -227,22 +246,28 @@ export default function canvas(props) {
         if (outputCanvasRef.current && !canvasCtx) {
             const ctx = outputCanvasRef.current.getContext("2d");
             ctx.imageSmoothingEnabled = true;
-            ctx.font = `${textDecoration} ${fontSize} ${fontFamily}`;
             setCanvasCtx(ctx);
         }
     }, [outputCanvasRef.current, canvasCtx]);
+
+    useEffect(() => {
+        debugger;
+        const ctx = outputCanvasRef.current.getContext("2d");
+        ctx.font = `${textDecoration} ${fontSize}px ${fontFamily}`;
+        setCanvasCtx(ctx);
+    }, [fontSize, wordSpace, fontFamily, textDecoration]);
 
     useEffect(() => {
         if (loadedVideo && outputCanvasRef.current && canvasCtx && loadedMetaData && sourceVideoRef.current) {
             const canvas = outputCanvasRef.current;
             canvas.width = sourceVideoRef.current.videoWidth * 0.5; //* 1.5;
             canvas.height = sourceVideoRef.current.videoHeight * 0.5; //* 1.5;
-            console.log(canvas.width, canvas.height);
+            // console.log(canvas.width, canvas.height);
             console.log("CALLED ONCE");
 
             const wordSegments = wordBreakDown(wordsData.segments, canvasCtx, context);
-            console.log({ wordSegments });
-            debugger;
+            // console.log({ wordSegments });
+
             // if (sourceVideoRef.current.paused) {
             //     return;
             // } else if (sourceVideoRef.current.ended) {
@@ -251,7 +276,6 @@ export default function canvas(props) {
             drawVideo(wordSegments);
             // }
             function onTimeUpdate(event) {
-                console.log(event);
                 onTrackedVideoFrame(sourceVideoRef.current.currentTime, sourceVideoRef.current.duration);
             }
             sourceVideoRef.current.addEventListener("timeupdate", onTimeUpdate);
@@ -262,7 +286,6 @@ export default function canvas(props) {
             }
 
             function drawVideo(wordSegments) {
-                debugger;
                 if (sourceVideoRef.current.paused) {
                     canvasCtx.drawImage(sourceVideoRef.current, 0, 0, canvas.width, canvas.height);
                     drawText(wordSegments, sourceVideoRef);
@@ -298,13 +321,12 @@ export default function canvas(props) {
                     return wd.sentenceEnd > (parseFloat(sourceVideoRef.current.currentTime) || 0) && wd.sentenceStart < (parseFloat(sourceVideoRef.current.currentTime) || 0);
                 });
                 // Set font properties
-                canvasCtx.font = `${textDecoration} ${fontSize} ${fontFamily}`;
+                // canvasCtx.font = `${textDecoration} ${fontSize}px ${fontFamily}`;
                 canvasCtx.textBaseline = "top"; // Align text from the...
                 canvasCtx.fillStyle = wordColor;
 
                 // Loop through each word and draw it with the appropriate color
                 currentWords.forEach((wordData, index) => {
-                    debugger;
                     // Calculate the position for drawing each word
                     let { x, y, wordWidth, fontHeight, wordWidthSpace } = wordData;
                     if (sourceVideoRef.current.currentTime > wordData.start && sourceVideoRef.current.currentTime < wordData.end) {
@@ -319,7 +341,7 @@ export default function canvas(props) {
                         canvasCtx.save();
 
                         // Translate to the word's center
-                        canvasCtx.translate(x + wordWidthSpace / 2, y + fontHeight / 2);
+                        canvasCtx.translate(x + wordWidth / 2, y + fontHeight / 2);
 
                         if (withWordAnimation) {
                             // Apply the scaling
@@ -337,9 +359,9 @@ export default function canvas(props) {
                             canvasCtx.strokeStyle = strokeColor;
 
                             drawRoundedRect(
-                                -wordWidthSpace / 2 - (padding + canvasCtx.lineWidth),
-                                -fontHeight / 2 - padding,
-                                wordWidthSpace + (padding + canvasCtx.lineWidth),
+                                -wordWidth / 2 - (padding + canvasCtx.lineWidth / 2),
+                                -fontHeight / 2 - padding - fontHeight * 0.2,
+                                wordWidth + (padding * 2 + canvasCtx.lineWidth),
                                 fontHeight + 2 * padding,
                                 cornerRadius
                             );
@@ -385,7 +407,7 @@ export default function canvas(props) {
             }
 
             return () => {
-                sourceVideoRef.current.removeEventListener("timeupdate", onTimeUpdate);
+                sourceVideoRef?.current?.removeEventListener("timeupdate", onTimeUpdate);
             };
         }
     }, [
@@ -406,50 +428,20 @@ export default function canvas(props) {
         withBackground,
         withSingleWord,
         withActiveWordColor,
-
+        wordSpace,
         withWordAnimation,
+        fontSize,
+        textDecoration,
+        fontFamily,
+        lineHeight,
+        /////
+        currentPrestSettings,
     ]);
 
     return (
         <div className="border border-f00">
             <h2>canvas</h2>
             <canvas ref={outputCanvasRef} id="outputCanvas"></canvas>
-
-            {/* {previewVideo && (
-                <div
-                    style={
-                        {
-                            // border: "2px solid red",
-                            // overflow: "hidden",
-                            // height: "0px",
-                        }
-                    }
-                    id="videoContainer"
-                >
-                    <video
-                        muted
-                        ref={sourceVideoRef}
-                        onLoadedData={(e) => {
-                            setLoadedVideo(true);
-                        }}
-                        onLoadedMetadata={() => {
-                            setLoadedMetaData(true);
-                        }}
-                        style={{
-                            maxWidth: "100%",
-                            height: "200px",
-                            width: "200px",
-                            // visibility: "hidden",
-                            position: "absolute",
-                            left: "-20%",
-                        }}
-                        id="sourceVideo"
-                        autoPlay={false}
-                        controls
-                        src={previewVideo}
-                    ></video>
-                </div>
-            )} */}
         </div>
     );
 }

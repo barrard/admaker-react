@@ -3,7 +3,7 @@ import Canvas from "./Canvas";
 import CanvasControls from "./CanvasControls";
 import { AudioUpload, VideoUpload } from "./Upload";
 import { TwoCol } from "./Layout";
-import { CanvasContextProvider } from "./Context/CanvasContext";
+import CanvasContextProvider from "./Context/CanvasContextProvider";
 import { readFromLocalStorage } from "../utils";
 export default function MainContainer() {
     useEffect(() => {

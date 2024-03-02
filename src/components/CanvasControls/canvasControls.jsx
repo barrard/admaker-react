@@ -1,13 +1,10 @@
 import React, { useContext, useState, useRef, useEffect, useMemo } from "react";
-import { CanvasContext } from "../Context/CanvasContext";
+import CanvasContext from "../Context/CanvasContext";
 import { BasicBtn } from "../Button";
-import ColorInput from "../Input/ColorInput";
-import NumberSlider from "../Input/NumberSlider";
-import Text from "../Upload/Text";
+import TextPresets from "./components/TextPresets";
 import ControlTabs from "./components/ControlTabs";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
 import TwoCol from "../Layout/TwoCol";
+import CustomTextConfig from "./components/CustomTextConfig";
 
 // Recording setup
 // let mediaRecorder;
@@ -18,8 +15,6 @@ export default function canvasControls(props) {
         activeWordColor,
         audioElRef,
         backgroundColor,
-        withBackground,
-        setWithBackground,
         canvasCtx,
         currentVideoTime,
         loadedMetaData,
@@ -31,29 +26,35 @@ export default function canvasControls(props) {
         setLoadedVideo,
         setStrokeColor,
         setTextStrokeThickness,
+        setWithActiveWordColor,
+        setWithBackground,
+        setWithSingleWord,
+        setWithTextStroke,
+        setWithWordAnimation,
         setWordColor,
         sourceVideoRef,
         strokeColor,
         textStrokeThickness,
         videoDuration,
-        wordColor,
-        withTextStroke,
-        setWithTextStroke,
         withActiveWordColor,
-        setWithActiveWordColor,
+        withBackground,
         withSingleWord,
-        setWithSingleWord,
+        withTextStroke,
         withWordAnimation,
-        setWithWordAnimation,
+        wordColor,
+        fontSize,
+        // wordSpace,
+        setFontSize,
     } = useContext(CanvasContext) || {};
     const [isPlaying, setIsPlaying] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
     const [blobUrl, setBlobUrl] = useState(false);
+    const [tab, setTab] = useState("custom");
+
     // const [withBackground, setWithBackground] = useState(true);
     // const [withActiveWordColor, setWithActiveWordColor] = useState(true);
     // const [withTextStroke, setWithTextStroke] = useState(true);
     // const [withWordAnimation, setWithWordAnimation] = useState(true);
-    const [presetName, setPresetName] = useState("My Silly Preset");
 
     // const [withSingleWord, setWithSingleWord] = useState(true);
     // const [currentVideoTime, setCurrentVideoTime] = useState(0);
@@ -64,10 +65,10 @@ export default function canvasControls(props) {
         if (sourceVideoRef.current) {
             if (isPlaying) {
                 sourceVideoRef.current.pause();
-                audioElRef.current.pause();
+                audioElRef?.current.pause();
             } else {
                 sourceVideoRef.current.play();
-                audioElRef.current.play();
+                audioElRef?.current.play();
             }
             setIsPlaying(!isPlaying);
         }
@@ -75,11 +76,11 @@ export default function canvasControls(props) {
 
     const restartVideo = () => {
         sourceVideoRef.current.pause();
-        audioElRef.current.pause();
+        audioElRef?.current.pause();
         sourceVideoRef.current.currentTime = 0;
         audioElRef.current.currentTime = 0;
         sourceVideoRef.current.play();
-        audioElRef.current.play();
+        audioElRef?.current.play();
         setIsPlaying(true);
     };
 
@@ -87,10 +88,10 @@ export default function canvasControls(props) {
         debugger;
         if (!sourceVideoRef.current) {
             alert("need a video");
-        } else if (!audioElRef.current) {
+        } else if (!audioElRef?.current) {
             alert("need a audio");
-        } else if (mediaRecorder.current?.state === "recording") {
-            mediaRecorder.current.stop();
+        } else if (mediaRecorder?.current?.state === "recording") {
+            mediaRecorder?.current.stop();
         } else {
             // alert("lets record");
             restartVideo();
@@ -98,10 +99,10 @@ export default function canvasControls(props) {
 
             // const audioContext = new AudioContext();
             // const audioSource = audioContext.createMediaElementSource(
-            //     audioElRef.current
+            //     audioElRef?.current
             // );
             const canvasStream = canvasCtx.canvas.captureStream(60);
-            const audioStream = audioElRef.current.captureStream();
+            const audioStream = audioElRef?.current.captureStream();
 
             const combinedStream = new MediaStream();
             canvasStream.getTracks().forEach((track) => combinedStream.addTrack(track));
@@ -125,19 +126,19 @@ export default function canvasControls(props) {
                 setBlobUrl(url);
             };
 
-            mediaRecorder.current.start();
+            mediaRecorder?.current.start();
         }
     };
 
     useEffect(() => {
-        if (currentVideoTime && mediaRecorder.current?.state === "recording") {
+        if (currentVideoTime && mediaRecorder?.current?.state === "recording") {
             console.log(currentVideoTime);
-            console.log(audioElRef.current.currentTime);
-            console.log(audioElRef.current.duration);
+            console.log(audioElRef?.current.currentTime);
+            console.log(audioElRef?.current.duration);
         }
 
         return () => {};
-    }, [currentVideoTime, mediaRecorder.current, audioElRef.current]);
+    }, [currentVideoTime, mediaRecorder?.current, audioElRef?.current]);
 
     const MainCanvasControlsMemo = useMemo(
         () => (
@@ -167,179 +168,38 @@ export default function canvasControls(props) {
         [currentVideoTime, videoDuration]
     );
 
-    const CustomText = (props) => {
-        const {
-            textStrokeThickness,
-            setTextStrokeThickness,
-            withTextStroke,
-            setWithTextStroke,
-            strokeColor,
-            setStrokeColor,
-            setWithBackground,
-            setBackgroundColor,
-            withActiveWordColor,
-            setWithActiveWordColor,
-            withSingleWord,
-            setWithSingleWord,
-            activeWordColor,
-            setActiveWordColor,
-
-            withWordAnimation,
-            setWithWordAnimation,
-        } = props.opts || {};
-        const [_withSingleWord, _setWithSingleWord] = useState(withSingleWord);
-
-        const [_withActiveWordColor, _setWithActiveWordColor] = useState(withActiveWordColor);
-        const [_activeWordColor, _setActiveWordColor] = useState(activeWordColor);
-        const [_textStrokeThickness, _setTextStrokeThickness] = useState(textStrokeThickness);
-        // const [_setTextStrokeThickness, _setSetTextStrokeThickness] = useState(setTextStrokeThickness)
-        const [_withTextStroke, _setWithTextStroke] = useState(withTextStroke);
-        const [_strokeColor, _setStrokeColor] = useState(strokeColor);
-        const [_withBackground, _setWithBackground] = useState(withBackground);
-        const [_backgroundColor, _setBackgroundColor] = useState(backgroundColor);
-        const [_withWordAnimation, _setWithWordAnimation] = useState(withWordAnimation);
-        // const [setStrokeColor, setSetStrokeColor] = useState(second)
-        const [xAxis, setXAxis] = useState("50");
-        const [yAxis, setYAxis] = useState("50");
-
-        useEffect(() => {
-            setTextStrokeThickness(_textStrokeThickness);
-            setWithTextStroke(_withTextStroke);
-            setStrokeColor(_strokeColor);
-            setWithBackground(_withBackground);
-            setBackgroundColor(_backgroundColor);
-            setWithSingleWord(_withSingleWord);
-            setWithWordAnimation(_withWordAnimation);
-            setWithActiveWordColor(_withActiveWordColor);
-            setActiveWordColor(_activeWordColor);
-        }, [
-            _textStrokeThickness,
-            _withTextStroke,
-            _strokeColor,
-            _withBackground,
-            _backgroundColor,
-            _withSingleWord,
-            _withWordAnimation,
-            _withActiveWordColor,
-            _activeWordColor,
-        ]);
-
-        return (
-            <div className="border border-f00">
-                {/* Prest Name */}
-                <div class="form-group">
-                    <label for="email-input">Preset Name:</label>
-                    <Input type="text" placeholder="Enter your email" value={presetName} onChange={(e) => setPresetName(e.target.value)} />
-                </div>
-
-                {/* X and Y Axis */}
-                <TwoCol>
-                    <div class="form-group">
-                        <label className="text-gray-900 font-bold text-base mb-2" for="x-axis">
-                            X-Axis:
-                        </label>
-                        <Input name="x-axis" type="number" placeholder="X-Axis" value={xAxis} onChange={(e) => setXAxis(e.target.value)} />
-                    </div>
-                    <div class="form-group">
-                        <label className="text-gray-900 font-bold text-base mb-2" for="y-axis">
-                            Y-Axis:
-                        </label>
-                        <Input name="y-axis" type="number" placeholder="Y-Axis" value={yAxis} onChange={(e) => setYAxis(e.target.value)} />
-                    </div>
-                </TwoCol>
-                {/* WithWord Animation */}
-                <span className="flex border justify-center items-baseline">
-                    {/* Adjust label text as needed */}
-                    <Switch className="me-2" name="word-animation" checked={_withWordAnimation} onCheckedChange={() => _setWithWordAnimation(!_withWordAnimation)} />
-                    <label onClick={() => _setWithWordAnimation(!_withWordAnimation)} className="text-gray-900 font-bold text-base mb-2" for="word-animation">
-                        {_withWordAnimation ? "Word Animation" : "Word Static"}
-                    </label>
-                </span>
-                {/* <br /> */}
-                {/* Single Word or Whole Sentence */}
-                <span className="flex border justify-center items-baseline">
-                    <Switch className="me-2" checked={_withSingleWord} onCheckedChange={() => _setWithSingleWord(!_withSingleWord)} />
-                    <label onClick={() => _setWithSingleWord(!_withSingleWord)} className="text-gray-900 font-bold text-base mb-2" for="word-animation">
-                        {/* Adjust label text as needed */}
-                        {_withSingleWord ? "Single Word" : "Whole Sentence"}
-                    </label>
-                </span>
-
-                {/* //WORD COLOR */}
-                <ColorInput label="Word Color" color={wordColor} setColor={setWordColor} />
-                {/* ACTIVE WORD COLOR */}
-                <div className={`${_withActiveWordColor ? "" : ""} flex justify-center items-center`}>
-                    <Switch checked={_withActiveWordColor} onCheckedChange={() => _setWithActiveWordColor(!_withActiveWordColor)} />
-                    <ColorInput
-                        className={`${!_withActiveWordColor ? "opacity-50 cursor-not-allowed" : ""} `}
-                        label="Active Word Color"
-                        color={_activeWordColor}
-                        setColor={_setActiveWordColor}
-                        disable={!_withActiveWordColor}
-                    />
-                </div>
-                {/* BAckgroundColor */}
-                <div className="flex justify-center items-center">
-                    <Switch checked={_withBackground} onCheckedChange={() => _setWithBackground(!_withBackground)} />
-
-                    <ColorInput
-                        className={`${!_withBackground ? "opacity-50 cursor-not-allowed" : ""} `}
-                        disable={!_withBackground}
-                        label="Background Color"
-                        color={_backgroundColor}
-                        setColor={_setBackgroundColor}
-                    />
-                </div>
-                {/* Color Stroke */}
-                <div className="flex justify-center items-center">
-                    <Switch checked={_withTextStroke} onCheckedChange={() => _setWithTextStroke(!_withTextStroke)} />
-                    <ColorInput
-                        disable={!_withTextStroke}
-                        className={`${!_withTextStroke ? "opacity-50 cursor-not-allowed" : ""} `}
-                        label="Stroke Color"
-                        color={_strokeColor}
-                        setColor={_setStrokeColor}
-                    />
-                </div>
-
-                {withTextStroke && <NumberSlider number={textStrokeThickness} setNumber={_setTextStrokeThickness} label="Text Stroke Thickness" />}
-
-                {/* //TODO MOVE THESE */}
-                {blobUrl && (
-                    <a href={blobUrl} download={"recorded_video.webm"}>
-                        DOWNLOAD
-                    </a>
-                )}
-            </div>
-        );
-    };
-
     const CustomTextMemo = useMemo(
         () => (
-            <CustomText
-                opts={{
-                    //text stroke thickness
-                    setTextStrokeThickness,
-                    textStrokeThickness,
-                    withTextStroke,
-                    setWithTextStroke,
-                    strokeColor,
-                    setStrokeColor,
-
-                    //with Background color
-                    backgroundColor,
-                    withBackground,
-                    setWithBackground,
-                    setBackgroundColor,
-                    withActiveWordColor,
-                    activeWordColor,
-                    setActiveWordColor,
-                    withSingleWord,
-                    setWithSingleWord,
-                    withWordAnimation,
-                    setWithWordAnimation,
-                    setWithActiveWordColor,
-                }}
+            <CustomTextConfig
+                tab={tab}
+                setTab={setTab}
+                // opts={{
+                //     //text stroke thickness
+                //     //with Background color
+                //     blobUrl,
+                //     activeWordColor,
+                //     backgroundColor,
+                //     setActiveWordColor,
+                //     setBackgroundColor,
+                //     setStrokeColor,
+                //     setTextStrokeThickness,
+                //     setWithActiveWordColor,
+                //     setWithBackground,
+                //     setWithSingleWord,
+                //     setWithTextStroke,
+                //     setWithWordAnimation,
+                //     setWordColor,
+                //     strokeColor,
+                //     textStrokeThickness,
+                //     withActiveWordColor,
+                //     withBackground,
+                //     withSingleWord,
+                //     withTextStroke,
+                //     withWordAnimation,
+                //     wordColor,
+                //     fontSize,
+                //     setFontSize,
+                // }}
             />
         ),
         [
@@ -348,10 +208,10 @@ export default function canvasControls(props) {
             blobUrl,
             // textStrokeThickness,
             // setTextStrokeThickness,
-            setPresetName,
+            // setPresetName,
             // strokeColor,
             // activeWordColor,
-            wordColor,
+            // wordColor,
             // backgroundColor,
             // withBackground,
             // withActiveWordColor,
@@ -361,9 +221,10 @@ export default function canvasControls(props) {
             // setWithTextStroke,
             // setWithBackground,
             // setWithActiveWordColor,
-            setStrokeColor,
-            setWordColor,
-            setActiveWordColor,
+            // wordSpace,
+            // setStrokeColor,
+            // setWordColor,
+            // setActiveWordColor,
             // setBackgroundColor,
         ]
     );
@@ -371,6 +232,8 @@ export default function canvasControls(props) {
     return (
         <>
             <ControlTabs
+                tab={tab}
+                setTab={setTab}
                 contents={[
                     {
                         name: "control",
@@ -384,7 +247,7 @@ export default function canvasControls(props) {
                             </>
                         ),
                     },
-                    { name: "presets", value: <Text /> },
+                    { name: "presets", value: <TextPresets setTab={setTab} tab={tab} /> },
 
                     { name: "custom", value: CustomTextMemo },
                     // { name: "custom", value: <CustomText /> },

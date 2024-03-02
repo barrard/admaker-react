@@ -31,16 +31,7 @@ export default function AudioInput(props) {
 
         <div className="grid w-full max-w-sm items-center gap-1.5 relative">
             <Label htmlFor="videoFile">Choose an audio file:</Label>
-            <Input
-                disabled={isLoading}
-                ref={audioFileInputRef}
-                onChange={onChange}
-                type="file"
-                id="audioFiles"
-                name="audioFiles[]"
-                multiple
-                accept="audio/*"
-            />
+            <Input disabled={isLoading} ref={audioFileInputRef} onChange={onChange} type="file" id="audioFiles" name="audioFiles[]" multiple accept="audio/*" />
             {isLoading && <LoadingSpinner />}
         </div>
     );

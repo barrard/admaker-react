@@ -7,7 +7,7 @@ export function readFromLocalStorage(key, defaultValue = null) {
         }
 
         const parsedData = JSON.parse(jsonData);
-        console.log(`Data read from localStorage with key '${key}'`);
+        // console.log(`Data read from localStorage with key '${key}'`);
         return parsedData;
     } catch (error) {
         console.error("Error reading from localStorage:", error);
@@ -18,7 +18,7 @@ export function writeToLocalStorage(key, data) {
     try {
         const jsonData = JSON.stringify(data);
         localStorage.setItem(key, jsonData);
-        console.log(`Data written to localStorage with key '${key}'`);
+        // console.log(`Data written to localStorage with key '${key}'`);
     } catch (error) {
         console.error("Error writing to localStorage:", error);
     }
