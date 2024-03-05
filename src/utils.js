@@ -2,7 +2,7 @@ export function readFromLocalStorage(key, defaultValue = null) {
     try {
         const jsonData = localStorage.getItem(key);
         if (jsonData === null) {
-            console.log(`No data found in localStorage with key '${key}'`);
+            // console.log(`No data found in localStorage with key '${key}'`);
             return defaultValue;
         }
 

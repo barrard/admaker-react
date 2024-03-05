@@ -4,6 +4,8 @@ import CanvasContext from "./CanvasContext";
 
 function CanvasContextProvider(props) {
     const [currentVideoTime, setCurrentVideoTime] = useState(0);
+    const [currentAudioTime, setCurrentAudioTime] = useState(0);
+    const [currentAudioDuration, setCurrentAudioDuration] = useState(0);
     const [videoDuration, setVideoDuration] = useState(0);
     const [textDecoration, setTextDecoration] = useState("italic");
     const [fontSize, setFontSize] = useState(40);
@@ -22,11 +24,15 @@ function CanvasContextProvider(props) {
     const [withSingleWord, setWithSingleWord] = useState(true);
     const [withWordAnimation, setWithWordAnimation] = useState(true);
     const [withActiveWordColor, setWithActiveWordColor] = useState(true);
+    const [wordsData, setWordsData] = useState(null);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
     const [yourAudioFiles, setYourAudioFiles] = useState([]);
     const [yourVideoFiles, setYourVideoFiles] = useState([]);
     const [selectedVideoFiles, setSelectedVideoFiles] = useState([]);
     const [selectedAudioFiles, setSelectedAudioFiles] = useState([]);
+    const [currentAudioFile, setCurrentAudioFile] = useState(null);
 
     const [previewVideo, setPreviewVideo] = useState(null);
     const [previewAudio, setPreviewAudio] = useState(null);
@@ -34,6 +40,9 @@ function CanvasContextProvider(props) {
     const [YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES] = useState(readFromLocalStorage("videoFiles", []));
     const [YOUR_PRESETS, setYOUR_PRESETS] = useState(readFromLocalStorage("presets", []));
     const [currentPrestSettings, setCurrentPrestSettings] = useState(null);
+
+    const [xAxis, setXAxis] = useState("50");
+    const [yAxis, setYAxis] = useState("50");
 
     const [loadedVideo, setLoadedVideo] = useState(false);
     const [loadedMetaData, setLoadedMetaData] = useState(false);
@@ -45,78 +54,90 @@ function CanvasContextProvider(props) {
     const baseUrl = "http://localhost:3001";
 
     const GLOBAL = {
-        loadedVideo,
-        setLoadedVideo,
-        loadedMetaData,
-        setLoadedMetaData,
-        baseUrl,
-        previewVideo,
-        setPreviewVideo,
-        previewAudio,
-        setPreviewAudio,
-        currentVideoTime,
-        videoDuration,
-        setCurrentVideoTime,
-        setVideoDuration,
-        sourceVideoRef,
+        activeWordColor,
         audioElRef,
         audioFileInputRef,
-        textDecoration,
-        setTextDecoration,
-        fontSize,
-        setFontSize,
-        fontFamily,
-        setFontFamily,
-        wordSpace,
-        setWordSpace,
-        canvasCtx,
-        setCanvasCtx,
-        activeWordColor,
-        setActiveWordColor,
-        wordColor,
-        setWordColor,
-        strokeColor,
-        setStrokeColor,
         backgroundColor,
-        setBackgroundColor,
-        textStrokeThickness,
-        setTextStrokeThickness,
-        presetName,
-        setPresetName,
-
+        baseUrl,
+        canvasCtx,
+        isVideoPlaying,
+        setIsVideoPlaying,
+        currentAudioFile,
+        setCurrentAudioFile,
+        currentPrestSettings,
+        currentVideoTime,
+        isAudioPlaying,
+        setIsAudioPlaying,
+        fontFamily,
+        fontSize,
+        currentAudioDuration,
+        setCurrentAudioDuration,
         lineHeight,
+        loadedMetaData,
+        loadedVideo,
+        presetName,
+        previewAudio,
+        previewVideo,
+        selectedAudioFiles,
+        selectedVideoFiles,
+        setActiveWordColor,
+        setBackgroundColor,
+        setCanvasCtx,
+        setCurrentPrestSettings,
+        setCurrentVideoTime,
+        setFontFamily,
+        setFontSize,
         setLineHeight,
+        setLoadedMetaData,
+        setLoadedVideo,
+        setPresetName,
+        setPreviewAudio,
+        setPreviewVideo,
+        setSelectedAudioFiles,
+        setSelectedVideoFiles,
+        setStrokeColor,
+        setTextDecoration,
+        setTextStrokeThickness,
+        setVideoDuration,
+        setWithActiveWordColor,
+        setWithBackground,
+        setWithSingleWord,
+        setWithTextStroke,
+        setWithWordAnimation,
+        setWordColor,
+        setWordSpace,
+        setYOUR_AUDIO_FILES,
+        setYOUR_PRESETS,
+        setYOUR_VIDEO_FILES,
+        setYourAudioFiles,
+        setYourVideoFiles,
+        sourceVideoRef,
+        strokeColor,
+        textDecoration,
+        textStrokeThickness,
+        videoDuration,
+        withActiveWordColor,
+        withBackground,
+        withSingleWord,
+        withTextStroke,
+        withWordAnimation,
+        wordColor,
+        wordSpace,
+        YOUR_AUDIO_FILES,
+        YOUR_PRESETS,
+        YOUR_VIDEO_FILES,
+        currentAudioTime,
+        setCurrentAudioTime,
 
         yourAudioFiles,
-        setYourAudioFiles,
+        wordsData,
+        setWordsData,
         yourVideoFiles,
-        setYourVideoFiles,
-        selectedVideoFiles,
-        setSelectedVideoFiles,
-        selectedAudioFiles,
-        setSelectedAudioFiles,
-        YOUR_AUDIO_FILES,
-        setYOUR_AUDIO_FILES,
-        YOUR_VIDEO_FILES,
-        setYOUR_VIDEO_FILES,
-        YOUR_PRESETS,
-        setYOUR_PRESETS,
-        currentPrestSettings,
-        setCurrentPrestSettings,
 
-        withTextStroke,
-        setWithTextStroke,
-        withSingleWord,
-        setWithSingleWord,
-
-        withBackground,
-        setWithBackground,
-
-        withWordAnimation,
-        setWithWordAnimation,
-
-        withActiveWordColor,
-        setWithActiveWordColor,
+        xAxis,
+        setXAxis,
+        yAxis,
+        setYAxis,
     };
     return <CanvasContext.Provider value={GLOBAL}>{props.children}</CanvasContext.Provider>;
 }

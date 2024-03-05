@@ -3,13 +3,7 @@ import { CompactPicker } from "react-color";
 import { Button } from "@/components/ui/button";
 import { BasicBtn } from "../Button";
 
-export default function ColorInput({
-    label = "label",
-    color,
-    setColor,
-    className,
-    disable = false,
-}) {
+export default function ColorInput({ label = "label", color, setColor, className, disable = false }) {
     const [showPicker, setShowPicker] = useState(false);
 
     const handleClick = () => {

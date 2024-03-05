@@ -14,6 +14,7 @@ export default function PresetCardItem({ preset = {}, presetName = "presetName",
     function removePreset(presetName) {
         console.log("Remove  " + presetName);
         delete YOUR_PRESETS[presetName];
+        debugger;
         setYOUR_PRESETS({ ...YOUR_PRESETS });
     }
 

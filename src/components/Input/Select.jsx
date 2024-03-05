@@ -6,8 +6,8 @@ export default function MySelect(props) {
     const { values, label, setValue, value } = props;
 
     return (
-        <div class="form-group">
-            <label className="text-gray-900 font-bold text-base mb-2" for="y-axis">
+        <div className="form-group">
+            <label className="text-gray-900 font-bold text-base mb-2" htmlFor="y-axis">
                 {label}:
             </label>
             <Select onValueChange={setValue} value={value}>

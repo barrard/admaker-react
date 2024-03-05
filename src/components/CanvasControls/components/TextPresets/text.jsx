@@ -9,10 +9,12 @@ export default function TextPresets(props) {
     const { selectedPreset, setSelectedPreset, YOUR_PRESETS, setYOUR_PRESETS } = useContext(CanvasContext);
 
     const clearPresets = () => {
+        debugger;
         setYOUR_PRESETS({});
     };
 
     useEffect(() => {
+        debugger;
         writeToLocalStorage("presets", YOUR_PRESETS);
     }, [YOUR_PRESETS]);
 

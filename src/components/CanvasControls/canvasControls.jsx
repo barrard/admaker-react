@@ -10,19 +10,26 @@ import CustomTextConfig from "./components/CustomTextConfig";
 // let mediaRecorder;
 let recordedChunks = [];
 export default function canvasControls(props) {
-    // const { audioElRef } = props;
     const {
+        // wordSpace,
         activeWordColor,
         audioElRef,
         backgroundColor,
         canvasCtx,
         currentVideoTime,
+        fontSize,
         loadedMetaData,
         loadedVideo,
+        setCurrentAudioDuration,
         previewVideo,
         setActiveWordColor,
         setBackgroundColor,
+        currentAudioFile,
+        setCurrentAudioFile,
+        setFontSize,
         setLoadedMetaData,
+        setCurrentVideoTime,
+        setVideoDuration,
         setLoadedVideo,
         setStrokeColor,
         setTextStrokeThickness,
@@ -33,56 +40,68 @@ export default function canvasControls(props) {
         setWithWordAnimation,
         setWordColor,
         sourceVideoRef,
+        isVideoPlaying,
+        setIsVideoPlaying,
         strokeColor,
         textStrokeThickness,
+        isAudioPlaying,
+        setIsAudioPlaying,
         videoDuration,
+        setCurrentAudioTime,
         withActiveWordColor,
         withBackground,
         withSingleWord,
         withTextStroke,
         withWordAnimation,
         wordColor,
-        fontSize,
-        // wordSpace,
-        setFontSize,
     } = useContext(CanvasContext) || {};
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false); //DO I REALLY NEED THIS?
     const [isRecording, setIsRecording] = useState(false);
-    const [blobUrl, setBlobUrl] = useState(false);
+    const [blobUrls, setBlobUrls] = useState([]);
     const [tab, setTab] = useState("custom");
 
-    // const [withBackground, setWithBackground] = useState(true);
-    // const [withActiveWordColor, setWithActiveWordColor] = useState(true);
-    // const [withTextStroke, setWithTextStroke] = useState(true);
-    // const [withWordAnimation, setWithWordAnimation] = useState(true);
-
-    // const [withSingleWord, setWithSingleWord] = useState(true);
-    // const [currentVideoTime, setCurrentVideoTime] = useState(0);
-    // const [mediaRecorder, setMediaRecorder] = useState(null)
     const mediaRecorder = useRef();
 
     const handleTogglePlay = () => {
+        if (!currentAudioFile?.source || !audioElRef?.current) {
+            console.log("debug");
+            debugger;
+            return;
+        }
         if (sourceVideoRef.current) {
             if (isPlaying) {
                 sourceVideoRef.current.pause();
-                audioElRef?.current.pause();
+                audioElRef?.current?.pause();
             } else {
                 sourceVideoRef.current.play();
-                audioElRef?.current.play();
+                audioElRef?.current?.play();
             }
             setIsPlaying(!isPlaying);
         }
     };
 
-    const restartVideo = () => {
-        sourceVideoRef.current.pause();
-        audioElRef?.current.pause();
-        sourceVideoRef.current.currentTime = 0;
-        audioElRef.current.currentTime = 0;
-        sourceVideoRef.current.play();
-        audioElRef?.current.play();
-        setIsPlaying(true);
-    };
+    function restartVideoAndAudio() {
+        restartAudio();
+        restartVideo();
+    }
+
+    function restartVideo() {
+        if (sourceVideoRef?.current) {
+            sourceVideoRef.current.pause();
+            sourceVideoRef.current.currentTime = 0;
+            sourceVideoRef.current.play();
+            setIsPlaying(true);
+        }
+    }
+
+    function restartAudio() {
+        if (audioElRef?.current) {
+            audioElRef.current.pause();
+            audioElRef.current.currentTime = 0;
+            audioElRef.current.play();
+            setIsPlaying(true);
+        }
+    }
 
     const handleRecord = () => {
         debugger;
@@ -92,9 +111,11 @@ export default function canvasControls(props) {
             alert("need a audio");
         } else if (mediaRecorder?.current?.state === "recording") {
             mediaRecorder?.current.stop();
+            setIsRecording(false);
         } else {
+            setIsRecording(true);
             // alert("lets record");
-            restartVideo();
+            restartVideoAndAudio();
             const videoPlayer = sourceVideoRef.current;
 
             // const audioContext = new AudioContext();
@@ -109,8 +130,9 @@ export default function canvasControls(props) {
             audioStream.getTracks().forEach((track) => combinedStream.addTrack(track));
 
             mediaRecorder.current = new MediaRecorder(combinedStream, {
-                videoBitsPerSecond: 5000000 * 2,
+                videoBitsPerSecond: 10000000, //25000000, //10000000,
                 mimeType: "video/webm; codecs=vp9",
+                // mimeType: "video/webm; codecs=av1", // Try AV1 if supported, otherwise "video/webm; codecs=vp9"
             });
 
             mediaRecorder.current.ondataavailable = (event) => {
@@ -120,10 +142,12 @@ export default function canvasControls(props) {
             };
 
             mediaRecorder.current.onstop = () => {
+                console.log("recorder onstop event");
                 const blob = new Blob(recordedChunks, { type: "video/webm" });
                 const url = URL.createObjectURL(blob);
                 // videoPlayer.src = url;
-                setBlobUrl(url);
+                debugger;
+                setBlobUrls([...blobUrls, url]);
             };
 
             mediaRecorder?.current.start();
@@ -131,14 +155,96 @@ export default function canvasControls(props) {
     };
 
     useEffect(() => {
-        if (currentVideoTime && mediaRecorder?.current?.state === "recording") {
-            console.log(currentVideoTime);
-            console.log(audioElRef?.current.currentTime);
-            console.log(audioElRef?.current.duration);
+        console.log(currentAudioFile);
+        if (currentAudioFile?.source && audioElRef?.current) {
+            setCurrentAudioDuration(audioElRef?.current.duration);
+            debugger;
+            if (isAudioPlaying) {
+                audioElRef.current.pause();
+                audioElRef.current.play();
+            }
         }
+    }, [currentAudioFile, currentAudioFile?.source]);
 
-        return () => {};
-    }, [currentVideoTime, mediaRecorder?.current, audioElRef?.current]);
+    //AUDIO EVENTS
+    function handleAudioStarted() {
+        debugger;
+        setIsAudioPlaying(true);
+        setIsPlaying(true);
+    }
+
+    function handleAudioEnded() {
+        console.log("handleAudioEnded");
+        debugger;
+        setIsPlaying(false);
+        setIsAudioPlaying(false);
+        audioElRef.current.currentTime = 0;
+        //lets also stop the video
+        if (mediaRecorder?.current?.state === "recording" || isRecording) {
+            //end current recording, and move to the next file
+            debugger;
+            sourceVideoRef.current.currentTime = 0;
+            sourceVideoRef.current.pause();
+            mediaRecorder?.current.stop();
+            console.log("Stop Recorder");
+
+            //iterate?
+        } else {
+            console.log("We like loop party");
+            //lets loop is keep the party going
+            restartVideoAndAudio();
+        }
+    }
+    function handleAudioTimeUpdate() {
+        const currentTime = audioElRef.current.currentTime;
+        setCurrentAudioTime(currentTime);
+    }
+    useEffect(() => {
+        if (!audioElRef.current) return;
+        setIsAudioPlaying;
+        audioElRef.current?.addEventListener("ended", handleAudioEnded);
+        audioElRef.current?.addEventListener("play", handleAudioStarted);
+        audioElRef.current?.addEventListener("timeupdate", handleAudioTimeUpdate);
+
+        return () => {
+            audioElRef.current?.removeEventListener("ended", handleAudioEnded);
+            audioElRef.current?.removeEventListener("timeupdate", handleAudioTimeUpdate);
+            audioElRef.current?.removeEventListener("play", handleAudioStarted);
+        };
+    }, [audioElRef.current]);
+
+    //VIDEO EVENTS
+
+    function onVideoTimeUpdate(event) {
+        setCurrentVideoTime(sourceVideoRef.current.currentTime); //Change #current to currentTime
+        setVideoDuration(sourceVideoRef.current.duration);
+    }
+
+    function handleVideoStarted() {
+        debugger;
+        setIsVideoPlaying(true);
+        setIsPlaying(true);
+    }
+
+    function handleVideoEnded() {
+        debugger;
+        setIsPlaying(false);
+        setIsVideoPlaying(false);
+        sourceVideoRef.current.currentTime = 0;
+    }
+
+    useEffect(() => {
+        if (!sourceVideoRef.current) return;
+        sourceVideoRef.current?.addEventListener("ended", handleVideoEnded);
+        sourceVideoRef.current?.addEventListener("play", handleVideoStarted);
+        sourceVideoRef.current.addEventListener("timeupdate", onVideoTimeUpdate);
+
+        return () => {
+            sourceVideoRef.current?.removeEventListener("ended", handleVideoEnded);
+            sourceVideoRef.current?.removeEventListener("play", handleVideoStarted);
+            sourceVideoRef?.current?.removeEventListener("timeupdate", onVideoTimeUpdate);
+        };
+    }, [sourceVideoRef.current]);
 
     const MainCanvasControlsMemo = useMemo(
         () => (
@@ -146,88 +252,34 @@ export default function canvasControls(props) {
                 <h2>canvas controls</h2>
 
                 <BasicBtn onClick={handleTogglePlay} text={isPlaying ? "Pause" : "Play"} />
-                <BasicBtn onClick={restartVideo} text={"Restart"} />
+                <BasicBtn onClick={restartVideoAndAudio} text={"Restart"} />
                 <br />
                 <BasicBtn onClick={handleRecord} text={isRecording ? "Stop" : "Record"} />
-                <audio style={{ visibility: "hidden" }} ref={audioElRef} id="audioElement" controls>
-                    <source src="" type="audio/mp3" />
-                    Your browser does not support the audio element.
-                </audio>
+                {/* <audio src={audioFile.source} ref={audioCardElRef} /> */}
+                {blobUrls.length > 0 &&
+                    blobUrls.map((blobUrl) => {
+                        return (
+                            <a href={blobUrl} download={"recorded_video.webm"}>
+                                DOWNLOAD
+                            </a>
+                        );
+                    })}
             </div>
         ),
 
-        [audioElRef, isPlaying, isRecording]
+        [audioElRef?.current, isPlaying, isRecording, currentAudioFile?.source, mediaRecorder?.current?.state, blobUrls]
     );
 
     const CurrentTimeMemo = useMemo(
         () => (
             <p>
-                <span id="currentVideoTime">{currentVideoTime}</span>/ <span id="videoDuration">{videoDuration}</span>
+                <span id="currentVideoTime">{currentVideoTime}</span>/ <span id="videoDuration">{videoDuration || 0}</span>
             </p>
         ),
         [currentVideoTime, videoDuration]
     );
 
-    const CustomTextMemo = useMemo(
-        () => (
-            <CustomTextConfig
-                tab={tab}
-                setTab={setTab}
-                // opts={{
-                //     //text stroke thickness
-                //     //with Background color
-                //     blobUrl,
-                //     activeWordColor,
-                //     backgroundColor,
-                //     setActiveWordColor,
-                //     setBackgroundColor,
-                //     setStrokeColor,
-                //     setTextStrokeThickness,
-                //     setWithActiveWordColor,
-                //     setWithBackground,
-                //     setWithSingleWord,
-                //     setWithTextStroke,
-                //     setWithWordAnimation,
-                //     setWordColor,
-                //     strokeColor,
-                //     textStrokeThickness,
-                //     withActiveWordColor,
-                //     withBackground,
-                //     withSingleWord,
-                //     withTextStroke,
-                //     withWordAnimation,
-                //     wordColor,
-                //     fontSize,
-                //     setFontSize,
-                // }}
-            />
-        ),
-        [
-            // withSingleWord,
-            // setWithSingleWord,
-            blobUrl,
-            // textStrokeThickness,
-            // setTextStrokeThickness,
-            // setPresetName,
-            // strokeColor,
-            // activeWordColor,
-            // wordColor,
-            // backgroundColor,
-            // withBackground,
-            // withActiveWordColor,
-            // withTextStroke,
-            // withWordAnimation,
-            // setWithWordAnimation,
-            // setWithTextStroke,
-            // setWithBackground,
-            // setWithActiveWordColor,
-            // wordSpace,
-            // setStrokeColor,
-            // setWordColor,
-            // setActiveWordColor,
-            // setBackgroundColor,
-        ]
-    );
+    const CustomTextMemo = useMemo(() => <CustomTextConfig tab={tab} setTab={setTab} />, []);
 
     return (
         <>
@@ -239,7 +291,6 @@ export default function canvasControls(props) {
                         name: "control",
                         value: (
                             <>
-                                {" "}
                                 <div className="border border-f00">
                                     {MainCanvasControlsMemo}
                                     {CurrentTimeMemo}
@@ -249,8 +300,8 @@ export default function canvasControls(props) {
                     },
                     { name: "presets", value: <TextPresets setTab={setTab} tab={tab} /> },
 
-                    { name: "custom", value: CustomTextMemo },
-                    // { name: "custom", value: <CustomText /> },
+                    // { name: "custom", value: CustomTextMemo },
+                    { name: "custom", value: <CustomTextConfig tab={tab} setTab={setTab} /> },
                 ]}
                 tabs={[
                     { name: "control", value: <>CONTROL</> },
@@ -259,41 +310,33 @@ export default function canvasControls(props) {
                     { name: "custom", value: <>CUSTOM</> },
                 ]}
             />
-            {previewVideo && (
-                <div
-                    style={
-                        {
-                            // border: "2px solid red",
-                            // overflow: "hidden",
-                            // height: "0px",
-                        }
-                    }
-                    id="videoContainer"
-                >
-                    <video
-                        muted
-                        ref={sourceVideoRef}
-                        onLoadedData={(e) => {
-                            setLoadedVideo(true);
-                        }}
-                        onLoadedMetadata={() => {
-                            setLoadedMetaData(true);
-                        }}
-                        style={{
-                            maxWidth: "100%",
-                            height: "200px",
-                            width: "200px",
-                            // visibility: "hidden",
-                            position: "absolute",
-                            left: "-20%",
-                        }}
-                        id="sourceVideo"
-                        autoPlay={false}
-                        controls
-                        src={previewVideo}
-                    ></video>
-                </div>
-            )}
+            <div
+                style={{
+                    maxWidth: "100%",
+                    height: "200px",
+                    width: "200px",
+                    // visibility: "hidden",
+                    position: "absolute",
+                    left: "-200%",
+                    top: "0%",
+                }}
+            >
+                <video
+                    muted
+                    ref={sourceVideoRef}
+                    onLoadedData={(e) => {
+                        setLoadedVideo(true);
+                    }}
+                    onLoadedMetadata={() => {
+                        setLoadedMetaData(true);
+                    }}
+                    id="sourceVideo"
+                    autoPlay={false}
+                    controls
+                    src={previewVideo || ""}
+                ></video>
+                <audio src={currentAudioFile?.source} style={{ visibility: "hidsden" }} ref={audioElRef} id="audioElement" controls></audio>
+            </div>
         </>
     );
 }

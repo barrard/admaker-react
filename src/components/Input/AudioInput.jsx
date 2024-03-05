@@ -26,7 +26,7 @@ export default function AudioInput(props) {
     const { onChange, audioFileInputRef, isLoading } = props;
 
     return (
-        // <label for="audioFile">Choose an audio file:</label>
+        // <label htmlFor="audioFile">Choose an audio file:</label>
         // <input type="file" id="audioFiles" name="audioFiles[]" multiple accept="audio/*" />
 
         <div className="grid w-full max-w-sm items-center gap-1.5 relative">

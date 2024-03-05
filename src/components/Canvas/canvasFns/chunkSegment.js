@@ -43,7 +43,8 @@ export default function chunkSegment(segment, nextSegment, canvasCtx, context) {
             // endOfSentence = true;
         }
 
-        if (word.includes(".")) {
+        const isEndOfSegment = iWord === words.length - 1;
+        if (word.includes(".") || word.includes("?") || word.includes("!") || isEndOfSegment) {
             endOfSentence = true;
             tempWordLine = "";
             sentences--;

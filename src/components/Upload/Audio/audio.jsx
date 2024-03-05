@@ -5,8 +5,21 @@ import CanvasContext from "../../Context/CanvasContext";
 import { readFromLocalStorage, writeToLocalStorage } from "../../../utils";
 import AudioCardItem from "./components/AudioCardItem";
 export default function Audio(props) {
-    const { previewAudio, setPreviewAudio, audioElRef, audioFileInputRef, baseUrl, YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES, YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES } =
-        useContext(CanvasContext);
+    const {
+        audioElRef,
+        audioFileInputRef,
+        baseUrl,
+        previewAudio,
+        setPreviewAudio,
+        setWordsData,
+        setYOUR_AUDIO_FILES,
+        setYOUR_VIDEO_FILES,
+        wordsData,
+        YOUR_AUDIO_FILES,
+        YOUR_VIDEO_FILES,
+        currentAudioFile,
+        setCurrentAudioFile,
+    } = useContext(CanvasContext);
 
     const [uploadingAudioFiles, setUploadingAudioFiles] = useState(false);
 
@@ -35,6 +48,16 @@ export default function Audio(props) {
 
     useEffect(() => {
         writeToLocalStorage("audioFiles", YOUR_AUDIO_FILES);
+
+        if (!currentAudioFile || !audioElRef?.current) {
+            setCurrentAudioFile(YOUR_AUDIO_FILES[0]);
+            setWordsData(YOUR_AUDIO_FILES[0]?.audioJson);
+
+            // audioElRef.current
+        }
+
+        // if (!wordsData && YOUR_AUDIO_FILES?.length) {
+        // }
     }, [YOUR_AUDIO_FILES]);
 
     return (
@@ -64,7 +87,6 @@ export default function Audio(props) {
                                 formData.append("audioFiles", selectedFiles[i]);
 
                                 const { name, size, type, lastModified } = selectedFiles[i];
-                                debugger;
                                 audioFilesData.push({
                                     originalFileName: name,
                                     source: e.target.result,
@@ -72,17 +94,7 @@ export default function Audio(props) {
                                     lastModified,
                                     type,
                                 });
-                                // console.log(YOUR_AUDIO_FILES);
-                                // setYOUR_AUDIO_FILES((files) => [
-                                //     ...files,
-                                //     {
-                                //         originalFileName: name,
-                                //         source: e.target.result,
-                                //         size,
-                                //         lastModified,
-                                //         type,
-                                //     },
-                                // ]);
+
                                 // If all files are processed, update your UI or handle the data
                                 if (audiosToUpload.length === selectedFiles.length) {
                                     console.log("All files loaded:", audiosToUpload);
@@ -93,12 +105,13 @@ export default function Audio(props) {
                                     const audioFilesUploaded = await uploadFile(formData, "/uploads/audio");
                                     setUploadingAudioFiles(false);
 
-                                    debugger;
-
                                     const audioDatas = audioFilesUploaded.map((af) => {
                                         let file = audioFilesData.find((f) => f.originalFileName === af.originalFileName);
                                         return { ...file, ...af };
                                     });
+                                    if (!wordsData) {
+                                        setWordsData(audioFilesUploaded[0].audioJson);
+                                    }
                                     setYOUR_AUDIO_FILES((YOUR_AUDIO_FILES) => {
                                         return [...YOUR_AUDIO_FILES, ...audioDatas];
                                     });

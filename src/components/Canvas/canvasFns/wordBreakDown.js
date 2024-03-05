@@ -23,7 +23,7 @@ export default function wordBreakDown(
 
     const timelyWords = [];
     canvasCtx.font = `${textDecoration} ${fontSize}px ${fontFamily}`;
-
+    if (!textSegments?.length) return;
     textSegments.forEach((segment, iSeg, textSegmentsArray) => {
         const { text: segmentText, start: segmentStart, end: segmentEnd } = segment;
         // segment.words.forEach(({ word, start, end }, iWord) => {
@@ -40,7 +40,6 @@ export default function wordBreakDown(
             let y = 0;
             sentenceTextLines.forEach((line, iLine) => {
                 let metrics = canvasCtx.measureText(line);
-                debugger;
                 let fontHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
                 y += metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent + lineHeight / 10;
 
@@ -49,7 +48,7 @@ export default function wordBreakDown(
                 line = line.trim();
                 canvasCtx.font = `${textDecoration} ${fontSize}px ${fontFamily}`;
                 // if (line.includes("workers are needed.")) {
-                //     debugger;
+                //     ;
                 // }
                 const lineWithWordSpace = line.replaceAll(" ", wordSpace);
 
@@ -66,7 +65,6 @@ export default function wordBreakDown(
                         const _y = y;
                         const _x = textStartOffset + nextWordStartOffset; // * iWtf; //TODOOOOO
                         if (_x < 0) {
-                            debugger;
                         }
                         const wordWidthSpace = canvasCtx.measureText(`${wtf.word}${wordSpace}`).width;
 

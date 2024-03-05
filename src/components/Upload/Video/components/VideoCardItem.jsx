@@ -15,7 +15,6 @@ export default function VideoCardItem({ file = {} }) {
         console.log("Remove  " + fileName);
         setYOUR_VIDEO_FILES(YOUR_VIDEO_FILES.filter((af) => af.originalFileName != fileName));
     }
-    console.log(file);
 
     return (
         <Card className="border border-green-500 relative">
