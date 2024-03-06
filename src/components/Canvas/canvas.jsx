@@ -1,32 +1,33 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import CanvasContext from "../Context/CanvasContext";
+import TimerContext from "../Context/TimerContext";
 import wordBreakDown from "./canvasFns/wordBreakDown";
 
-export default function canvas(props) {
+export default function Canvas(props) {
+    const { currentVideoTime } = useContext(TimerContext) || {};
     const context = useContext(CanvasContext) || {};
     const {
-        previewVideo,
+        audioElRef,
         canvasCtx,
-        currentVideoTime,
+        currentPrestSettings,
         fontFamily,
+        isPlaying,
+        loadedMetaData,
+        loadedVideo,
+        previewVideo,
         setCanvasCtx,
+        setCurrentPrestSettings,
         setFontFamily,
         setFontSize,
+        setLoadedMetaData,
+        setLoadedVideo,
         setTextDecoration,
         setTextStrokeThickness,
         sourceVideoRef,
         textDecoration,
         videoDuration,
-        loadedVideo,
-        setLoadedVideo,
-        loadedMetaData,
-        setLoadedMetaData,
-        audioElRef,
-        wordSpace,
-        isPlaying,
         wordsData,
-        currentPrestSettings,
-        setCurrentPrestSettings,
+        wordSpace,
     } = context;
     const {
         wordColor,
@@ -45,6 +46,7 @@ export default function canvas(props) {
     } = currentPrestSettings || {};
     // const [loadedVideo, setLoadedVideo] = useState(false);
     // const [loadedMetaData, setLoadedMetaData] = useState(false);
+    console.log("Canvas");
 
     const outputCanvasRef = useRef();
 
@@ -65,8 +67,8 @@ export default function canvas(props) {
     useEffect(() => {
         if (loadedVideo && outputCanvasRef.current && canvasCtx && loadedMetaData && sourceVideoRef.current && wordsData?.segments && audioElRef?.current) {
             const canvas = outputCanvasRef.current;
-            canvas.width = sourceVideoRef.current.videoWidth * 1; //* 0.5
-            canvas.height = sourceVideoRef.current.videoHeight * 1; //* 0.5
+            canvas.width = sourceVideoRef.current.videoWidth * 0.5;
+            canvas.height = sourceVideoRef.current.videoHeight * 0.5;
             // console.log(canvas.width, canvas.height);
             console.log("CALLED ONCE");
             const wordSegments = wordBreakDown(wordsData.segments, canvasCtx, context);
@@ -109,6 +111,7 @@ export default function canvas(props) {
                 const currentWords = _wordsData.filter((wd) => {
                     return wd.sentenceEnd > (parseFloat(sourceVideoRef.current.currentTime) || 0) && wd.sentenceStart < (parseFloat(sourceVideoRef.current.currentTime) || 0);
                 });
+
                 // Set font properties
                 canvasCtx.textBaseline = "top"; // Align text from the...
                 canvasCtx.fillStyle = wordColor;

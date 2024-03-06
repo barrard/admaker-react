@@ -4,6 +4,7 @@ import CanvasControls from "./CanvasControls";
 import { AudioUpload, VideoUpload } from "./Upload";
 import { TwoCol } from "./Layout";
 import CanvasContextProvider from "./Context/CanvasContextProvider";
+import TimerContextProvider from "./Context/TimerContextProvider";
 
 export default function MainContainer() {
     return (
@@ -14,7 +15,9 @@ export default function MainContainer() {
                     {/* Canvas element*/}
                     <Canvas />
                     {/* canvas controls */}
-                    <CanvasControls />
+                    <TimerContextProvider>
+                        <CanvasControls />
+                    </TimerContextProvider>
                 </TwoCol>
                 <TwoCol>
                     {/* <!-- AUDIO UPLOAD --> */}

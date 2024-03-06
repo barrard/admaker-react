@@ -5,9 +5,11 @@ import CanvasContext from "../../Context/CanvasContext";
 import VideoCardItem from "./components/VideoCardItem";
 
 export default function Video(props) {
-    const { previewVideo, setPreviewVideo, selectedVideoFiles, setSelectedVideoFiles } = useContext(CanvasContext);
+    // console.log("Video");
 
-    const [previewUrls, setPreviewUrls] = useState([]); // State to manage preview URLs
+    const { previewVideo, setPreviewVideo, selectedVideoFiles, setSelectedVideoFiles, previewUrls, setPreviewUrls } = useContext(CanvasContext);
+
+    // const [previewUrls, setPreviewUrls] = useState([]); // State to manage preview URLs
 
     // const handleFileChange = (event) => {
 

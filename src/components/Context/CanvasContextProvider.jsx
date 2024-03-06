@@ -3,8 +3,8 @@ import { readFromLocalStorage } from "../../utils";
 import CanvasContext from "./CanvasContext";
 
 function CanvasContextProvider(props) {
-    const [currentVideoTime, setCurrentVideoTime] = useState(0);
-    const [currentAudioTime, setCurrentAudioTime] = useState(0);
+    // const [currentVideoTime, setCurrentVideoTime] = useState(0);
+    // const [currentAudioTime, setCurrentAudioTime] = useState(0);
     const [currentAudioDuration, setCurrentAudioDuration] = useState(0);
     const [videoDuration, setVideoDuration] = useState(0);
     const [textDecoration, setTextDecoration] = useState("italic");
@@ -38,6 +38,8 @@ function CanvasContextProvider(props) {
     const [previewAudio, setPreviewAudio] = useState(null);
     const [YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES] = useState(readFromLocalStorage("audioFiles", []));
     const [YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES] = useState(readFromLocalStorage("videoFiles", []));
+    const [previewUrls, setPreviewUrls] = useState([]); // State to manage VIDEO preview URLs
+
     const [YOUR_PRESETS, setYOUR_PRESETS] = useState(readFromLocalStorage("presets", []));
     const [currentPrestSettings, setCurrentPrestSettings] = useState(null);
 
@@ -54,6 +56,8 @@ function CanvasContextProvider(props) {
     const baseUrl = "http://localhost:3001";
 
     const GLOBAL = {
+        previewUrls,
+        setPreviewUrls,
         activeWordColor,
         audioElRef,
         audioFileInputRef,
@@ -65,7 +69,7 @@ function CanvasContextProvider(props) {
         currentAudioFile,
         setCurrentAudioFile,
         currentPrestSettings,
-        currentVideoTime,
+        // currentVideoTime,
         isAudioPlaying,
         setIsAudioPlaying,
         fontFamily,
@@ -84,7 +88,7 @@ function CanvasContextProvider(props) {
         setBackgroundColor,
         setCanvasCtx,
         setCurrentPrestSettings,
-        setCurrentVideoTime,
+        // setCurrentVideoTime,
         setFontFamily,
         setFontSize,
         setLineHeight,
@@ -126,8 +130,8 @@ function CanvasContextProvider(props) {
         YOUR_AUDIO_FILES,
         YOUR_PRESETS,
         YOUR_VIDEO_FILES,
-        currentAudioTime,
-        setCurrentAudioTime,
+        // currentAudioTime,
+        // setCurrentAudioTime,
 
         yourAudioFiles,
         wordsData,

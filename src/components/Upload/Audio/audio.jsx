@@ -4,6 +4,8 @@ import { AudioInput } from "../../Input";
 import CanvasContext from "../../Context/CanvasContext";
 import { readFromLocalStorage, writeToLocalStorage } from "../../../utils";
 import AudioCardItem from "./components/AudioCardItem";
+import TimerContextProvider from "../../Context/TimerContextProvider";
+
 export default function Audio(props) {
     const {
         audioElRef,
@@ -20,6 +22,7 @@ export default function Audio(props) {
         currentAudioFile,
         setCurrentAudioFile,
     } = useContext(CanvasContext);
+    console.log("Audio");
 
     const [uploadingAudioFiles, setUploadingAudioFiles] = useState(false);
 
@@ -131,7 +134,9 @@ export default function Audio(props) {
                 {YOUR_AUDIO_FILES.map((audioFile, i) => {
                     return (
                         <React.Fragment key={audioFile.originalFileName}>
-                            <AudioCardItem audioFile={audioFile} />
+                            <TimerContextProvider>
+                                <AudioCardItem audioFile={audioFile} />
+                            </TimerContextProvider>
                         </React.Fragment>
                     );
                 })}

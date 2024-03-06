@@ -1,22 +1,24 @@
 import React, { useContext, useState, useRef, useEffect, useMemo } from "react";
 import CanvasContext from "../Context/CanvasContext";
+import TimerContext from "../Context/TimerContext";
+
 import { BasicBtn } from "../Button";
 import TextPresets from "./components/TextPresets";
 import ControlTabs from "./components/ControlTabs";
 import TwoCol from "../Layout/TwoCol";
 import CustomTextConfig from "./components/CustomTextConfig";
-
+import DownloadItem from "./components/DownloadItem";
 // Recording setup
 // let mediaRecorder;
 let recordedChunks = [];
 export default function canvasControls(props) {
+    const { setCurrentVideoTime, currentVideoTime, setCurrentAudioTime } = useContext(TimerContext) || {};
     const {
         // wordSpace,
         activeWordColor,
         audioElRef,
         backgroundColor,
         canvasCtx,
-        currentVideoTime,
         fontSize,
         loadedMetaData,
         loadedVideo,
@@ -26,9 +28,12 @@ export default function canvasControls(props) {
         setBackgroundColor,
         currentAudioFile,
         setCurrentAudioFile,
+
         setFontSize,
         setLoadedMetaData,
-        setCurrentVideoTime,
+        currentPrestSettings,
+        setCurrentPrestSettings,
+
         setVideoDuration,
         setLoadedVideo,
         setStrokeColor,
@@ -47,25 +52,28 @@ export default function canvasControls(props) {
         isAudioPlaying,
         setIsAudioPlaying,
         videoDuration,
-        setCurrentAudioTime,
         withActiveWordColor,
         withBackground,
         withSingleWord,
         withTextStroke,
         withWordAnimation,
         wordColor,
+        YOUR_AUDIO_FILES,
+        previewUrls,
+        setPreviewVideo,
+        YOUR_PRESETS,
     } = useContext(CanvasContext) || {};
+    // console.log("canvasControls");
     const [isPlaying, setIsPlaying] = useState(false); //DO I REALLY NEED THIS?
     const [isRecording, setIsRecording] = useState(false);
     const [blobUrls, setBlobUrls] = useState([]);
-    const [tab, setTab] = useState("custom");
+    const [tab, setTab] = useState("control");
 
     const mediaRecorder = useRef();
 
     const handleTogglePlay = () => {
         if (!currentAudioFile?.source || !audioElRef?.current) {
             console.log("debug");
-            debugger;
             return;
         }
         if (sourceVideoRef.current) {
@@ -104,7 +112,6 @@ export default function canvasControls(props) {
     }
 
     const handleRecord = () => {
-        debugger;
         if (!sourceVideoRef.current) {
             alert("need a video");
         } else if (!audioElRef?.current) {
@@ -113,44 +120,109 @@ export default function canvasControls(props) {
             mediaRecorder?.current.stop();
             setIsRecording(false);
         } else {
-            setIsRecording(true);
-            // alert("lets record");
-            restartVideoAndAudio();
-            const videoPlayer = sourceVideoRef.current;
+            //Loop over all the audio, video and preset, filter by enabled
+            beginRecording();
 
-            // const audioContext = new AudioContext();
-            // const audioSource = audioContext.createMediaElementSource(
-            //     audioElRef?.current
-            // );
-            const canvasStream = canvasCtx.canvas.captureStream(60);
-            const audioStream = audioElRef?.current.captureStream();
-
-            const combinedStream = new MediaStream();
-            canvasStream.getTracks().forEach((track) => combinedStream.addTrack(track));
-            audioStream.getTracks().forEach((track) => combinedStream.addTrack(track));
-
-            mediaRecorder.current = new MediaRecorder(combinedStream, {
-                videoBitsPerSecond: 10000000, //25000000, //10000000,
-                mimeType: "video/webm; codecs=vp9",
-                // mimeType: "video/webm; codecs=av1", // Try AV1 if supported, otherwise "video/webm; codecs=vp9"
-            });
-
-            mediaRecorder.current.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    recordedChunks.push(event.data);
-                }
-            };
-
-            mediaRecorder.current.onstop = () => {
-                console.log("recorder onstop event");
-                const blob = new Blob(recordedChunks, { type: "video/webm" });
-                const url = URL.createObjectURL(blob);
-                // videoPlayer.src = url;
+            async function beginRecording() {
+                let audioIndex = 0;
+                let videoIndex = 0;
+                let presetIndex = 0;
                 debugger;
-                setBlobUrls([...blobUrls, url]);
-            };
+                const audioFiles = YOUR_AUDIO_FILES;
+                const videoFiles = previewUrls;
+                const textPresets = Object.values(YOUR_PRESETS);
+                while (audioIndex < audioFiles.length) {
+                    videoIndex = 0;
+                    while (videoIndex < videoFiles.length) {
+                        presetIndex = 0;
+                        while (presetIndex < textPresets.length) {
+                            //Do something
 
-            mediaRecorder?.current.start();
+                            const audioFile = audioFiles[audioIndex];
+                            setCurrentAudioFile(audioFile);
+
+                            const preset = textPresets[presetIndex];
+                            setCurrentPrestSettings(preset);
+
+                            const videoFile = videoFiles[videoIndex];
+                            setPreviewVideo(videoFile.videoUrl);
+
+                            try {
+                                await new Promise((resolve, reject) => {
+                                    const data = {
+                                        audioFile,
+                                        videoFile,
+                                        preset,
+                                    };
+                                    return recordVideoIterator(data, resolve, reject);
+                                });
+                            } catch (err) {
+                                debugger;
+                                throw err;
+                            }
+
+                            //Then increment
+                            presetIndex++;
+                        }
+                        videoIndex++;
+                    }
+                    audioIndex++;
+                }
+            }
+
+            function recordVideoIterator(data, resolve, reject) {
+                try {
+                    setIsRecording(true);
+                    // alert("lets record");
+                    restartVideoAndAudio();
+                    const videoPlayer = sourceVideoRef.current;
+
+                    // const audioContext = new AudioContext();
+                    // const audioSource = audioContext.createMediaElementSource(
+                    //     audioElRef?.current
+                    // );
+                    const canvasStream = canvasCtx.canvas.captureStream(60);
+                    const audioStream = audioElRef?.current.captureStream();
+
+                    const combinedStream = new MediaStream();
+                    canvasStream.getTracks().forEach((track) => combinedStream.addTrack(track));
+                    audioStream.getTracks().forEach((track) => combinedStream.addTrack(track));
+
+                    mediaRecorder.current = new MediaRecorder(combinedStream, {
+                        videoBitsPerSecond: 10000000 / 2, //25000000, //10000000,
+                        mimeType: "video/webm; codecs=vp9",
+                        // mimeType: "video/webm; codecs=av1", // Try AV1 if supported, otherwise "video/webm; codecs=vp9"
+                    });
+
+                    mediaRecorder.current.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            recordedChunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.current.onstop = () => {
+                        console.log("recorder onstop event");
+                        const blob = new Blob(recordedChunks, { type: "video/webm" });
+                        const url = URL.createObjectURL(blob);
+                        // videoPlayer.src = url;
+                        console.log(data);
+                        debugger;
+                        const { audioFile, videoFile, preset } = data;
+                        const blobData = {
+                            audio: audioFile.originalFileName,
+                            preset: preset.presetName,
+                            video: videoFile.name,
+                            blobUrl: url,
+                        };
+                        setBlobUrls((blobUrls) => [...blobUrls, blobData]);
+                        resolve();
+                    };
+
+                    mediaRecorder?.current.start();
+                } catch (err) {
+                    reject(err);
+                }
+            }
         }
     };
 
@@ -158,7 +230,6 @@ export default function canvasControls(props) {
         console.log(currentAudioFile);
         if (currentAudioFile?.source && audioElRef?.current) {
             setCurrentAudioDuration(audioElRef?.current.duration);
-            debugger;
             if (isAudioPlaying) {
                 audioElRef.current.pause();
                 audioElRef.current.play();
@@ -168,21 +239,18 @@ export default function canvasControls(props) {
 
     //AUDIO EVENTS
     function handleAudioStarted() {
-        debugger;
         setIsAudioPlaying(true);
         setIsPlaying(true);
     }
 
     function handleAudioEnded() {
         console.log("handleAudioEnded");
-        debugger;
         setIsPlaying(false);
         setIsAudioPlaying(false);
         audioElRef.current.currentTime = 0;
         //lets also stop the video
         if (mediaRecorder?.current?.state === "recording" || isRecording) {
             //end current recording, and move to the next file
-            debugger;
             sourceVideoRef.current.currentTime = 0;
             sourceVideoRef.current.pause();
             mediaRecorder?.current.stop();
@@ -201,7 +269,6 @@ export default function canvasControls(props) {
     }
     useEffect(() => {
         if (!audioElRef.current) return;
-        setIsAudioPlaying;
         audioElRef.current?.addEventListener("ended", handleAudioEnded);
         audioElRef.current?.addEventListener("play", handleAudioStarted);
         audioElRef.current?.addEventListener("timeupdate", handleAudioTimeUpdate);
@@ -221,13 +288,11 @@ export default function canvasControls(props) {
     }
 
     function handleVideoStarted() {
-        debugger;
         setIsVideoPlaying(true);
         setIsPlaying(true);
     }
 
     function handleVideoEnded() {
-        debugger;
         setIsPlaying(false);
         setIsVideoPlaying(false);
         sourceVideoRef.current.currentTime = 0;
@@ -256,18 +321,31 @@ export default function canvasControls(props) {
                 <br />
                 <BasicBtn onClick={handleRecord} text={isRecording ? "Stop" : "Record"} />
                 {/* <audio src={audioFile.source} ref={audioCardElRef} /> */}
+                {previewUrls?.length > 0 && <p>{previewUrls?.length}</p>}
                 {blobUrls.length > 0 &&
                     blobUrls.map((blobUrl) => {
                         return (
-                            <a href={blobUrl} download={"recorded_video.webm"}>
-                                DOWNLOAD
-                            </a>
+                            <React.Fragment key={blobUrl.blobUrl}>
+                                <DownloadItem item={blobUrl} />
+                            </React.Fragment>
                         );
                     })}
             </div>
         ),
 
-        [audioElRef?.current, isPlaying, isRecording, currentAudioFile?.source, mediaRecorder?.current?.state, blobUrls]
+        [
+            currentPrestSettings,
+            audioElRef?.current,
+            isPlaying,
+            isRecording,
+            currentAudioFile?.source,
+            mediaRecorder?.current?.state,
+            blobUrls,
+            setBlobUrls,
+            previewUrls,
+            YOUR_AUDIO_FILES,
+            YOUR_PRESETS,
+        ]
     );
 
     const CurrentTimeMemo = useMemo(
