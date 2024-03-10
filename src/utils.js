@@ -41,7 +41,7 @@ export const defaultPresets = {
         wordColor: "#ffffff",
         xAxis: 73,
         yAxis: 300,
-        wordSpace: "Medium",
+        wordSpace: 10,
         enabled: true,
     },
     YUM2: {
@@ -60,7 +60,7 @@ export const defaultPresets = {
         wordColor: "#ffffff",
         xAxis: 73,
         yAxis: 300,
-        wordSpace: "Large",
+        wordSpace: 20,
         enabled: true,
     },
     YUM3: {
@@ -79,7 +79,7 @@ export const defaultPresets = {
         wordColor: "#ffffff",
         xAxis: 73,
         yAxis: 300,
-        wordSpace: "Large",
+        wordSpace: 20,
         enabled: true,
     },
 };
