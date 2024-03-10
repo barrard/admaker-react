@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Trash2, Upload, Settings2 } from "lucide-react";
@@ -9,7 +9,7 @@ import { writeToLocalStorage } from "../../../../../utils";
 export default function PresetCardItem({ preset = {}, presetName = "presetName", setTab, tab }) {
     const canvasContext = useContext(CanvasContext);
     const { YOUR_PRESETS, setYOUR_PRESETS, currentPrestSettings, setCurrentPrestSettings } = canvasContext;
-    const [enabledText, setEnabledText] = useState(true);
+    const [enabledText, setEnabledText] = useState(preset.enabled);
 
     function removePreset(presetName) {
         console.log("Remove  " + presetName);
@@ -36,7 +36,12 @@ export default function PresetCardItem({ preset = {}, presetName = "presetName",
         setTab("custom");
     }
 
-    console.log(preset);
+    useEffect(() => {
+        setYOUR_PRESETS((presets) => {
+            presets[presetName].enabled = enabledText;
+            return { ...presets };
+        });
+    }, [enabledText]);
     return (
         <Card className="border border-green-500 relative">
             <Switch className="top-1 right-1 absolute" checked={enabledText} onCheckedChange={() => setEnabledText(!enabledText)} />

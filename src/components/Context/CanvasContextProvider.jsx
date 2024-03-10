@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { readFromLocalStorage } from "../../utils";
+import React, { useState, useRef, useEffect } from "react";
+import { readFromLocalStorage, defaultPresets } from "../../utils";
 import CanvasContext from "./CanvasContext";
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -12,7 +12,7 @@ function CanvasContextProvider(props) {
     const [fontSize, setFontSize] = useState(40);
     const [lineHeight, setLineHeight] = useState(180);
     const [fontFamily, setFontFamily] = useState(`Rubik Mono One`); //Serif  // "Josefin Sans" //  Rubik Mono One
-    const [wordSpace, setWordSpace] = useState("l");
+    const [wordSpace, setWordSpace] = useState(5);
     const [canvasCtx, setCanvasCtx] = useState(false);
     const [activeWordColor, setActiveWordColor] = useState("red");
     const [wordColor, setWordColor] = useState("white");
@@ -40,12 +40,13 @@ function CanvasContextProvider(props) {
     const [YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES] = useState(readFromLocalStorage("audioFiles", []));
     const [YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES] = useState(readFromLocalStorage("videoFiles", []));
     const [previewUrls, setPreviewUrls] = useState([]); // State to manage VIDEO preview URLs
+    const [isRecording, setIsRecording] = useState(false);
 
     const [YOUR_PRESETS, setYOUR_PRESETS] = useState(readFromLocalStorage("presets", []));
     const [currentPrestSettings, setCurrentPrestSettings] = useState(null);
 
-    const [xAxis, setXAxis] = useState("50");
-    const [yAxis, setYAxis] = useState("50");
+    const [xAxis, setXAxis] = useState(50);
+    const [yAxis, setYAxis] = useState(50);
 
     const [loadedVideo, setLoadedVideo] = useState(false);
     const [loadedMetaData, setLoadedMetaData] = useState(false);
@@ -56,7 +57,18 @@ function CanvasContextProvider(props) {
     const audioElRef = useRef();
     // const baseUrl = "http://localhost:3001";
 
+    useEffect(() => {
+        if (!Object.keys(YOUR_PRESETS).length) {
+            setYOUR_PRESETS(defaultPresets);
+        } else if (!currentPrestSettings) {
+            const firstKey = Object.keys(YOUR_PRESETS)[0];
+            setCurrentPrestSettings(YOUR_PRESETS[firstKey]);
+        }
+    }, [YOUR_PRESETS, currentPrestSettings]);
+
     const GLOBAL = {
+        isRecording,
+        setIsRecording,
         previewUrls,
         setPreviewUrls,
         activeWordColor,

@@ -12,48 +12,34 @@ export default function AudioCardItem({ audioFile = {} }) {
     const audioCardElRef = useRef();
     const { currentAudioTime, setCurrentAudioTime } = useContext(TimerContext);
     const {
-        YOUR_AUDIO_FILES,
-        setYOUR_AUDIO_FILES,
-        wordsData,
-        setWordsData,
-        sourceVideoRef,
-        currentAudioFile,
-        setCurrentAudioFile,
-        isAudioPlaying,
-        setIsAudioPlaying,
         audioElRef,
+        currentAudioFile,
+        isAudioPlaying,
+        setCurrentAudioFile,
+        setIsAudioPlaying,
+        setWordsData,
+        setYOUR_AUDIO_FILES,
+        sourceVideoRef,
+        wordsData,
+        YOUR_AUDIO_FILES,
     } = useContext(CanvasContext);
     const [isExpanded, setIsExpanded] = useState(false); // Initially collapsed
-    const [enabledAudio, setEnabledAudio] = useState(true);
+    const [enabledAudio, setEnabledAudio] = useState(audioFile.enabled);
     const [isCurrentAudio, setIsCurrentAudio] = useState(false);
     // const [currentTime, setCurrentTime] = useState(0);
     function removeAudioFile(fileName) {
         console.log("Remove  " + fileName);
         setYOUR_AUDIO_FILES(YOUR_AUDIO_FILES.filter((af) => af.originalFileName != fileName));
     }
-    // console.log("AudioCardItem");
 
-    // const handleAudioEnded = () => {
-    //     setIsAudioPlaying(false);
-    //     audioCardElRef.current.currentTime = 0;
-    // };
+    useEffect(() => {
+        const indexOf = YOUR_AUDIO_FILES.findIndex((af) => af.savedFileName === audioFile.savedFileName);
+        if (indexOf < 0 || !YOUR_AUDIO_FILES[indexOf]) return;
 
-    // const handleTimeUpdate = () => {
-    //     const currentTime = audioCardElRef.current.currentTime;
+        YOUR_AUDIO_FILES[indexOf].enabled = enabledAudio;
+        setYOUR_AUDIO_FILES([...YOUR_AUDIO_FILES]);
+    }, [enabledAudio]);
 
-    //     setCurrentTime(currentTime);
-    // };
-
-    // useEffect(() => {
-    //     if (!audioCardElRef.current) return;
-    //     audioCardElRef.current?.addEventListener("ended", handleAudioEnded);
-    //     audioCardElRef.current?.addEventListener("timeupdate", handleTimeUpdate);
-
-    //     return () => {
-    //         audioCardElRef.current?.removeEventListener("ended", handleAudioEnded);
-    //         audioCardElRef.current?.removeEventListener("timeupdate", handleTimeUpdate);
-    //     };
-    // }, [audioCardElRef.current]);
     useEffect(() => {
         // console.log(currentAudioFile);
         if (currentAudioFile?.savedFileName === audioFile?.savedFileName) {

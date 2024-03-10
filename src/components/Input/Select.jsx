@@ -15,9 +15,9 @@ export default function MySelect(props) {
                     <SelectValue placeholder={label} />
                 </SelectTrigger>
                 <SelectContent>
-                    {Object.keys(values).map((v) => (
-                        <SelectItem key={v} value={v}>
-                            {values[v]}
+                    {Object.keys(values).map((k) => (
+                        <SelectItem key={values[k]} value={values[k]}>
+                            {k}
                         </SelectItem>
                     ))}
                 </SelectContent>

@@ -223,7 +223,7 @@ export default function CustomTextConfig(props) {
                     <label className="text-gray-900 font-bold text-base mb-2" htmlFor="y-axis">
                         Y-Axis:
                     </label>
-                    <Input name="y-axis" type="number" placeholder="Y-Axis" value={_yAxis} onChange={(e) => _setYAxis(e.target.value)} />
+                    <Input name="y-axis" type="number" placeholder="Y-Axis" value={_yAxis} onChange={(e) => _setYAxis(parseInt(e.target.value))} />
                 </div>
             </TwoCol>
             <TwoCol>

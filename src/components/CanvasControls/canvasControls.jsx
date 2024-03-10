@@ -19,38 +19,41 @@ export default function canvasControls(props) {
         audioElRef,
         backgroundColor,
         canvasCtx,
+        currentAudioFile,
+        currentPrestSettings,
         fontSize,
+        isAudioPlaying,
+        isRecording,
+        isVideoPlaying,
         loadedMetaData,
         loadedVideo,
-        setCurrentAudioDuration,
+        previewUrls,
         previewVideo,
         setActiveWordColor,
         setBackgroundColor,
-        currentAudioFile,
+        setCurrentAudioDuration,
         setCurrentAudioFile,
-
-        setFontSize,
-        setLoadedMetaData,
-        currentPrestSettings,
         setCurrentPrestSettings,
-
-        setVideoDuration,
+        setFontSize,
+        setIsAudioPlaying,
+        setIsRecording,
+        setIsVideoPlaying,
+        setLoadedMetaData,
         setLoadedVideo,
+        setPreviewVideo,
         setStrokeColor,
         setTextStrokeThickness,
+        setVideoDuration,
         setWithActiveWordColor,
         setWithBackground,
         setWithSingleWord,
         setWithTextStroke,
         setWithWordAnimation,
         setWordColor,
+        setWordsData,
         sourceVideoRef,
-        isVideoPlaying,
-        setIsVideoPlaying,
         strokeColor,
         textStrokeThickness,
-        isAudioPlaying,
-        setIsAudioPlaying,
         videoDuration,
         withActiveWordColor,
         withBackground,
@@ -59,32 +62,40 @@ export default function canvasControls(props) {
         withWordAnimation,
         wordColor,
         YOUR_AUDIO_FILES,
-        previewUrls,
-        setPreviewVideo,
         YOUR_PRESETS,
     } = useContext(CanvasContext) || {};
     // console.log("canvasControls");
     const [isPlaying, setIsPlaying] = useState(false); //DO I REALLY NEED THIS?
-    const [isRecording, setIsRecording] = useState(false);
     const [blobUrls, setBlobUrls] = useState([]);
     const [tab, setTab] = useState("control");
 
     const mediaRecorder = useRef();
 
     const handleTogglePlay = () => {
+        debugger;
         if (!currentAudioFile?.source || !audioElRef?.current) {
             console.log("debug");
             return;
         }
         if (sourceVideoRef.current) {
             if (isPlaying) {
-                sourceVideoRef.current.pause();
-                audioElRef?.current?.pause();
+                setIsPlaying(false);
+
+                if (isAudioPlaying) {
+                    audioElRef?.current?.pause();
+                    setIsAudioPlaying(false);
+                }
+                if (isVideoPlaying) {
+                    sourceVideoRef.current.pause();
+                    setIsVideoPlaying(false);
+                }
             } else {
                 sourceVideoRef.current.play();
                 audioElRef?.current?.play();
+                setIsAudioPlaying(true);
+                setIsVideoPlaying(true);
+                setIsPlaying(true);
             }
-            setIsPlaying(!isPlaying);
         }
     };
 
@@ -127,10 +138,15 @@ export default function canvasControls(props) {
                 let audioIndex = 0;
                 let videoIndex = 0;
                 let presetIndex = 0;
+                setIsRecording(true);
+
+                let currentAudioIndex;
+                let currentVideoIndex;
+                let currentPresetIndex;
                 debugger;
-                const audioFiles = YOUR_AUDIO_FILES;
+                const audioFiles = YOUR_AUDIO_FILES.filter((af) => af.enabled);
                 const videoFiles = previewUrls;
-                const textPresets = Object.values(YOUR_PRESETS);
+                const textPresets = Object.values(YOUR_PRESETS).filter((preset) => preset.enabled);
                 while (audioIndex < audioFiles.length) {
                     videoIndex = 0;
                     while (videoIndex < videoFiles.length) {
@@ -140,12 +156,22 @@ export default function canvasControls(props) {
 
                             const audioFile = audioFiles[audioIndex];
                             setCurrentAudioFile(audioFile);
+                            if (currentAudioIndex !== audioIndex) {
+                                setWordsData(audioFile?.audioJson);
+                            }
 
                             const preset = textPresets[presetIndex];
                             setCurrentPrestSettings(preset);
 
                             const videoFile = videoFiles[videoIndex];
                             setPreviewVideo(videoFile.videoUrl);
+                            if (currentVideoIndex !== videoIndex || currentAudioIndex !== audioIndex) {
+                                await timeWait(2);
+                            }
+
+                            currentAudioIndex = audioIndex;
+                            currentVideoIndex = videoIndex;
+                            currentPresetIndex = presetIndex;
 
                             try {
                                 await new Promise((resolve, reject) => {
@@ -153,6 +179,9 @@ export default function canvasControls(props) {
                                         audioFile,
                                         videoFile,
                                         preset,
+                                        audioIndex,
+                                        videoIndex,
+                                        presetIndex,
                                     };
                                     return recordVideoIterator(data, resolve, reject);
                                 });
@@ -168,6 +197,8 @@ export default function canvasControls(props) {
                     }
                     audioIndex++;
                 }
+                setIsRecording(false);
+                alert("DONE");
             }
 
             function recordVideoIterator(data, resolve, reject) {
@@ -207,12 +238,15 @@ export default function canvasControls(props) {
                         // videoPlayer.src = url;
                         console.log(data);
                         debugger;
-                        const { audioFile, videoFile, preset } = data;
+                        const { audioFile, videoFile, preset, audioIndex, videoIndex, presetIndex } = data;
                         const blobData = {
                             audio: audioFile.originalFileName,
                             preset: preset.presetName,
                             video: videoFile.name,
                             blobUrl: url,
+                            audioIndex,
+                            videoIndex,
+                            presetIndex,
                         };
                         setBlobUrls((blobUrls) => [...blobUrls, blobData]);
                         resolve();
@@ -227,7 +261,7 @@ export default function canvasControls(props) {
     };
 
     useEffect(() => {
-        console.log(currentAudioFile);
+        // console.log(currentAudioFile);
         if (currentAudioFile?.source && audioElRef?.current) {
             setCurrentAudioDuration(audioElRef?.current.duration);
             if (isAudioPlaying) {
@@ -296,6 +330,7 @@ export default function canvasControls(props) {
         setIsPlaying(false);
         setIsVideoPlaying(false);
         sourceVideoRef.current.currentTime = 0;
+        setCurrentVideoTime(0);
     }
 
     useEffect(() => {
@@ -417,4 +452,16 @@ export default function canvasControls(props) {
             </div>
         </>
     );
+}
+
+async function timeWait(time) {
+    try {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve();
+            }, time * 1000);
+        });
+    } catch (err) {
+        return err;
+    }
 }

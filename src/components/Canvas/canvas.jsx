@@ -24,10 +24,12 @@ export default function Canvas(props) {
         setTextDecoration,
         setTextStrokeThickness,
         sourceVideoRef,
+        isRecording,
         textDecoration,
         videoDuration,
         wordsData,
         wordSpace,
+        yAxis,
     } = context;
     const {
         wordColor,
@@ -67,8 +69,8 @@ export default function Canvas(props) {
     useEffect(() => {
         if (loadedVideo && outputCanvasRef.current && canvasCtx && loadedMetaData && sourceVideoRef.current && wordsData?.segments && audioElRef?.current) {
             const canvas = outputCanvasRef.current;
-            canvas.width = sourceVideoRef.current.videoWidth * 0.5;
-            canvas.height = sourceVideoRef.current.videoHeight * 0.5;
+            canvas.width = sourceVideoRef.current.videoWidth * 1;
+            canvas.height = sourceVideoRef.current.videoHeight * 1;
             // console.log(canvas.width, canvas.height);
             console.log("CALLED ONCE");
             const wordSegments = wordBreakDown(wordsData.segments, canvasCtx, context);
@@ -203,6 +205,7 @@ export default function Canvas(props) {
         backgroundColor,
         activeWordColor,
         strokeColor,
+        yAxis,
         textStrokeThickness,
         setTextStrokeThickness,
         withTextStroke,
@@ -219,6 +222,7 @@ export default function Canvas(props) {
         currentPrestSettings,
         wordsData?.segments,
         audioElRef?.current,
+        context,
     ]);
 
     return (

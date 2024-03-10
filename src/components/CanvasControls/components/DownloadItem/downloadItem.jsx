@@ -11,7 +11,9 @@ import TimerContext from "../../../Context/TimerContext";
 export default function DownloadCardItem(props) {
     const { item } = props;
 
-    const { audio, preset, video, blobUrl } = item;
+    const { audio, preset, video, blobUrl, audioIndex, videoIndex, presetIndex } = item;
+    debugger;
+    const NAME = `video-${videoIndex}_audio-${audioIndex}_preset-${presetIndex}`;
     return (
         <Card
             className={`border border-green-500 relative
@@ -26,7 +28,7 @@ export default function DownloadCardItem(props) {
                 className={"border border-red-300 p-1"}
                 // onClick={() => setIsExpanded(!isExpanded)}
             >
-                <CardTitle className="text-sm font-semibold">{"audioFile.originalFileName"}</CardTitle>
+                <CardTitle className="text-sm font-semibold">{NAME}</CardTitle>
 
                 {/* {isExpanded && (
                     <CardDescription className="overflow-hidden">
@@ -43,7 +45,7 @@ export default function DownloadCardItem(props) {
             </CardContent> */}
             <CardFooter className={"border border-blue-300 p-1"}>
                 <div>
-                    <a href={blobUrl} download={"recorded_video.webm"}>
+                    <a href={blobUrl} download={`${NAME}.webm`}>
                         DOWNLOAD
                     </a>
                 </div>
@@ -53,49 +55,6 @@ export default function DownloadCardItem(props) {
                     text={<Trash2 className="text-red-500" size={18} />}
                     title="Delete"
                 />
-                {/* {audioFile.source && (
-                    <>
-                        <BasicBtn
-                            // id="clearAudioFilesList"
-                            onClick={() => {
-                                console.log(audioFile.originalFileName);
-                                if (isAudioPlaying) {
-                                    setIsAudioPlaying(false);
-                                    audioElRef.current.pause();
-                                    audioElRef.current.currentTime = 0;
-                                    if (sourceVideoRef?.current) {
-                                        try {
-                                            // sourceVideoRef.current.currentTime = 0;
-                                            sourceVideoRef.current.pause();
-                                        } catch (err) {
-                                            console.error(err);
-                                        }
-                                    }
-                                } else {
-                                    setCurrentAudioFile(audioFile);
-                                    setWordsData(audioFile.audioJson);
-                                    setIsAudioPlaying(true);
-                                    audioElRef.current.play();
-                                    //set video to tim 0 and audio to time 0 and play both
-                                    if (sourceVideoRef?.current) {
-                                        try {
-                                            sourceVideoRef.current.currentTime = 0;
-                                            sourceVideoRef.current.play();
-                                        } catch (err) {
-                                            console.error(err);
-                                        }
-                                    }
-                                }
-                            }}
-                            text={audioIsPlaying ? <Pause className="text-yellow-500" size={18} /> : <Play className="text-green-500" size={18} />}
-                            title={audioIsPlaying ? "Pause" : "Play"}
-                        />
-                        <span className="pl-2">
-                            {audioIsPlaying ? currentAudioTime.toFixed(2) : 0.0} : {audioCardElRef.current?.duration.toFixed(2)}
-                        </span>
-                        <audio src={audioFile.source} ref={audioCardElRef} />
-                    </>
-                )} */}
             </CardFooter>
         </Card>
     );
