@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { readFromLocalStorage } from "../../utils";
 import CanvasContext from "./CanvasContext";
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function CanvasContextProvider(props) {
     // const [currentVideoTime, setCurrentVideoTime] = useState(0);
@@ -53,7 +54,7 @@ function CanvasContextProvider(props) {
 
     const sourceVideoRef = useRef();
     const audioElRef = useRef();
-    const baseUrl = "http://localhost:3001";
+    // const baseUrl = "http://localhost:3001";
 
     const GLOBAL = {
         previewUrls,
