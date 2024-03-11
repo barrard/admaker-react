@@ -12,7 +12,7 @@ export default function DownloadCardItem(props) {
     const { item } = props;
 
     const { audio, preset, video, blobUrl, audioIndex, videoIndex, presetIndex } = item;
-    debugger;
+
     const NAME = `video-${videoIndex}_audio-${audioIndex}_preset-${presetIndex}`;
     return (
         <Card
@@ -45,7 +45,7 @@ export default function DownloadCardItem(props) {
             </CardContent> */}
             <CardFooter className={"border border-blue-300 p-1"}>
                 <div>
-                    <a href={blobUrl} download={`${NAME}.webm`}>
+                    <a href={blobUrl} download={`${NAME}.mp4`}>
                         DOWNLOAD
                     </a>
                 </div>

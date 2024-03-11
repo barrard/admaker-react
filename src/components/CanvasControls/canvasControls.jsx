@@ -10,7 +10,7 @@ import CustomTextConfig from "./components/CustomTextConfig";
 import DownloadItem from "./components/DownloadItem";
 // Recording setup
 // let mediaRecorder;
-let recordedChunks = [];
+// let recordedChunks = [];
 export default function canvasControls(props) {
     const { setCurrentVideoTime, currentVideoTime, setCurrentAudioTime } = useContext(TimerContext) || {};
     const {
@@ -51,6 +51,7 @@ export default function canvasControls(props) {
         setWithWordAnimation,
         setWordColor,
         setWordsData,
+        wordsData,
         sourceVideoRef,
         strokeColor,
         textStrokeThickness,
@@ -153,12 +154,12 @@ export default function canvasControls(props) {
                         presetIndex = 0;
                         while (presetIndex < textPresets.length) {
                             //Do something
-
+                            debugger;
                             const audioFile = audioFiles[audioIndex];
                             setCurrentAudioFile(audioFile);
-                            if (currentAudioIndex !== audioIndex) {
-                                setWordsData(audioFile?.audioJson);
-                            }
+                            // if (currentAudioIndex !== audioIndex) {
+                            setWordsData({ ...audioFile?.audioJson });
+                            // }
 
                             const preset = textPresets[presetIndex];
                             setCurrentPrestSettings(preset);
@@ -182,6 +183,8 @@ export default function canvasControls(props) {
                                         audioIndex,
                                         videoIndex,
                                         presetIndex,
+                                        canvasCtx,
+                                        audioElRef,
                                     };
                                     return recordVideoIterator(data, resolve, reject);
                                 });
@@ -198,30 +201,44 @@ export default function canvasControls(props) {
                     audioIndex++;
                 }
                 setIsRecording(false);
-                alert("DONE");
             }
 
             function recordVideoIterator(data, resolve, reject) {
                 try {
+                    let recordedChunks = [];
+
+                    const { canvasCtx, audioElRef } = data;
                     setIsRecording(true);
                     // alert("lets record");
                     restartVideoAndAudio();
-                    const videoPlayer = sourceVideoRef.current;
+                    // const videoPlayer = sourceVideoRef.current;
 
                     // const audioContext = new AudioContext();
                     // const audioSource = audioContext.createMediaElementSource(
                     //     audioElRef?.current
                     // );
                     const canvasStream = canvasCtx.canvas.captureStream(60);
-                    const audioStream = audioElRef?.current.captureStream();
-
+                    const audioStream = audioElRef.current.captureStream();
+                    debugger;
                     const combinedStream = new MediaStream();
                     canvasStream.getTracks().forEach((track) => combinedStream.addTrack(track));
-                    audioStream.getTracks().forEach((track) => combinedStream.addTrack(track));
+                    audioStream.getTracks().forEach((track) => {
+                        debugger;
+                        combinedStream.addTrack(track);
+                    });
+
+                    // let mimeType;
+                    // if (MediaRecorder.isTypeSupported("video/mp4; codecs=h264")) {
+                    //     mimeType = "video/mp4; codecs=h264";
+                    // } else {
+                    //     mimeType = "video/webm; codecs=vp9"; // Or codecs=vp8 for older compatibility
+                    // }
 
                     mediaRecorder.current = new MediaRecorder(combinedStream, {
-                        videoBitsPerSecond: 10000000 / 2, //25000000, //10000000,
+                        videoBitsPerSecond: 10000000, //25000000, //10000000,
                         mimeType: "video/webm; codecs=vp9",
+                        // mimeType: "video/mp4; codecs=h264",
+
                         // mimeType: "video/webm; codecs=av1", // Try AV1 if supported, otherwise "video/webm; codecs=vp9"
                     });
 
@@ -233,11 +250,10 @@ export default function canvasControls(props) {
 
                     mediaRecorder.current.onstop = () => {
                         console.log("recorder onstop event");
+
                         const blob = new Blob(recordedChunks, { type: "video/webm" });
                         const url = URL.createObjectURL(blob);
-                        // videoPlayer.src = url;
-                        console.log(data);
-                        debugger;
+
                         const { audioFile, videoFile, preset, audioIndex, videoIndex, presetIndex } = data;
                         const blobData = {
                             audio: audioFile.originalFileName,
@@ -373,13 +389,17 @@ export default function canvasControls(props) {
             audioElRef?.current,
             isPlaying,
             isRecording,
-            currentAudioFile?.source,
+            currentAudioFile?.audioJson,
+            wordsData,
+            currentAudioFile,
             mediaRecorder?.current?.state,
             blobUrls,
             setBlobUrls,
             previewUrls,
             YOUR_AUDIO_FILES,
             YOUR_PRESETS,
+            audioElRef?.current?.source,
+            canvasCtx.canvas,
         ]
     );
 

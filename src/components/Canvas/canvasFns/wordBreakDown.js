@@ -54,7 +54,6 @@ export default function wordBreakDown(
                 const lineWithWordSpace = line.replaceAll(" ", "");
 
                 const spacesCount = line.split(" ").length - 1;
-                debugger;
                 // const lineWidth = canvasCtx.measureText(lineWithWordSpace).width;
                 const lineWidth = canvasCtx.measureText(lineWithWordSpace).width + spacesCount * wordSpace;
 

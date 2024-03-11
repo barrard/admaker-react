@@ -27,9 +27,10 @@ export default function Canvas(props) {
         isRecording,
         textDecoration,
         videoDuration,
-        wordsData,
+        // wordsData,
         wordSpace,
         yAxis,
+        currentAudioFile,
     } = context;
     const {
         wordColor,
@@ -67,27 +68,28 @@ export default function Canvas(props) {
     }, [fontSize, wordSpace, fontFamily, textDecoration]);
 
     useEffect(() => {
-        if (loadedVideo && outputCanvasRef.current && canvasCtx && loadedMetaData && sourceVideoRef.current && wordsData?.segments && audioElRef?.current) {
+        if (loadedVideo && outputCanvasRef.current && canvasCtx && loadedMetaData && sourceVideoRef.current && currentAudioFile?.audioJson?.segments && audioElRef?.current) {
             const canvas = outputCanvasRef.current;
             canvas.width = sourceVideoRef.current.videoWidth * 1;
             canvas.height = sourceVideoRef.current.videoHeight * 1;
             // console.log(canvas.width, canvas.height);
             console.log("CALLED ONCE");
-            const wordSegments = wordBreakDown(wordsData.segments, canvasCtx, context);
+            debugger;
+            const wordSegments = wordBreakDown(currentAudioFile?.audioJson?.segments, canvasCtx, context);
 
             drawVideo(wordSegments);
 
             function drawVideo(wordSegments) {
                 if (sourceVideoRef.current.paused) {
                     canvasCtx.drawImage(sourceVideoRef.current, 0, 0, canvas.width, canvas.height);
-                    drawText(wordSegments, sourceVideoRef);
+                    drawText(wordSegments, audioElRef);
                     return;
                 }
                 if (sourceVideoRef.current.ended) {
                     return;
                 }
                 canvasCtx.drawImage(sourceVideoRef.current, 0, 0, canvas.width, canvas.height);
-                drawText(wordSegments, sourceVideoRef);
+                drawText(wordSegments, audioElRef);
                 requestAnimationFrame(() => drawVideo(wordSegments));
             }
             // EaseInOutCubic function for smooth animation
@@ -220,9 +222,10 @@ export default function Canvas(props) {
         lineHeight,
         /////
         currentPrestSettings,
-        wordsData?.segments,
+        // wordsData?.segments,
         audioElRef?.current,
         context,
+        currentAudioFile,
     ]);
 
     return (
