@@ -74,7 +74,7 @@ export default function chunkSegment(segment, nextSegment, canvasCtx, context) {
                 lastWord.end = end;
                 lastWord.nextWordStart = nextWord.start;
             } else {
-                timedSentence.end = end;
+                timedSentence.end = end + 0.5;
                 lastWord.end = end;
             }
 

@@ -256,12 +256,13 @@ export default function canvasControls(props) {
         audioElRef.current.currentTime = 0;
         //lets also stop the video
         if (mediaRecorder?.current?.state === "recording" || isRecording) {
-            //end current recording, and move to the next file
-            sourceVideoRef.current.currentTime = 0;
-            sourceVideoRef.current.pause();
-            mediaRecorder?.current.stop();
-            console.log("Stop Recorder");
-
+            setTimeout(() => {
+                //end current recording, and move to the next file
+                sourceVideoRef.current.currentTime = 0;
+                sourceVideoRef.current.pause();
+                mediaRecorder?.current.stop();
+                console.log("Stop Recorder");
+            }, 500);
             //iterate?
         } else {
             console.log("We like loop party");

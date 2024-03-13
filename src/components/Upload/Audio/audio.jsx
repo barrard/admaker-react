@@ -97,7 +97,7 @@ export default function Audio(props) {
 
                                     const audioDatas = audioFilesUploaded.map((af) => {
                                         let file = audioFilesData.find((f) => f.originalFileName === af.originalFileName);
-                                        return { ...file, ...af };
+                                        return { ...file, ...af, enabled: true };
                                     });
                                     if (!wordsData) {
                                         setWordsData(audioFilesUploaded[0].audioJson);
