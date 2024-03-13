@@ -34,9 +34,10 @@ function CanvasContextProvider(props) {
     const [selectedVideoFiles, setSelectedVideoFiles] = useState([]);
     const [selectedAudioFiles, setSelectedAudioFiles] = useState([]);
     const [currentAudioFile, setCurrentAudioFile] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const [previewVideo, setPreviewVideo] = useState(null);
-    const [previewAudio, setPreviewAudio] = useState(null);
+
     const [YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES] = useState(readFromLocalStorage("audioFiles", []));
     // const [YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES] = useState(readFromLocalStorage("videoFiles", []));
     const [previewVideos, setPreviewVideos] = useState([]); // State to manage VIDEO preview URLs
@@ -66,50 +67,121 @@ function CanvasContextProvider(props) {
         }
     }, [YOUR_PRESETS, currentPrestSettings]);
 
+    function handleTogglePlay(files = {}) {
+        debugger;
+        const { audioFile, videoFile } = files;
+        if (!currentAudioFile?.source || !audioElRef?.current) {
+            console.log("debug");
+            return;
+        }
+
+        if (isPlaying) {
+            setIsPlaying(false);
+
+            //stop playing audio
+            if (isAudioPlaying) {
+                setIsAudioPlaying(false);
+                audioElRef?.current?.pause();
+                // audioElRef.current.currentTime = 0;
+            }
+
+            //stop playing video
+            if (isVideoPlaying) {
+                setIsVideoPlaying(false);
+                sourceVideoRef.current.pause();
+                // sourceVideoRef.current.currentTime = 0;
+            }
+        } else {
+            //start playing audio
+            if (audioFile) {
+                setCurrentAudioFile(audioFile);
+                setWordsData(audioFile.audioJson);
+            }
+            setIsAudioPlaying(true);
+            audioElRef.current.play();
+
+            //start playing video
+            if (videoFile) {
+                setPreviewVideo(videoFile);
+            }
+            setIsVideoPlaying(true);
+            sourceVideoRef.current.play();
+
+            setIsPlaying(true);
+        }
+    }
+
+    function restartVideoAndAudio() {
+        restartAudio();
+        restartVideo();
+    }
+
+    function restartVideo() {
+        if (sourceVideoRef?.current) {
+            sourceVideoRef.current.pause();
+            sourceVideoRef.current.currentTime = 0;
+            sourceVideoRef.current.play();
+            setIsPlaying(true);
+            setIsVideoPlaying(true);
+        }
+    }
+
+    function restartAudio() {
+        if (audioElRef?.current) {
+            audioElRef.current.pause();
+            audioElRef.current.currentTime = 0;
+            audioElRef.current.play();
+            setIsPlaying(true);
+            setIsAudioPlaying(true);
+        }
+    }
+
     const GLOBAL = {
-        isRecording,
-        setIsRecording,
-        previewVideos,
-        setPreviewVideos,
         activeWordColor,
         audioElRef,
         audioFileInputRef,
         backgroundColor,
         baseUrl,
         canvasCtx,
-        isVideoPlaying,
-        setIsVideoPlaying,
+        currentAudioDuration,
         currentAudioFile,
-        setCurrentAudioFile,
         currentPrestSettings,
-        // currentVideoTime,
-        isAudioPlaying,
-        setIsAudioPlaying,
         fontFamily,
         fontSize,
-        currentAudioDuration,
-        setCurrentAudioDuration,
+        handleTogglePlay,
+        isAudioPlaying,
+        isPlaying,
+        isRecording,
+        isVideoPlaying,
         lineHeight,
         loadedMetaData,
         loadedVideo,
         presetName,
-        previewAudio,
         previewVideo,
+        previewVideos,
+        restartAudio,
+        restartVideo,
+        restartVideoAndAudio,
         selectedAudioFiles,
         selectedVideoFiles,
         setActiveWordColor,
         setBackgroundColor,
         setCanvasCtx,
+        setCurrentAudioDuration,
+        setCurrentAudioFile,
         setCurrentPrestSettings,
-        // setCurrentVideoTime,
         setFontFamily,
         setFontSize,
+        setIsAudioPlaying,
+        setIsPlaying,
+        setIsRecording,
+        setIsVideoPlaying,
         setLineHeight,
         setLoadedMetaData,
         setLoadedVideo,
         setPresetName,
-        setPreviewAudio,
         setPreviewVideo,
+        setPreviewVideos,
         setSelectedAudioFiles,
         setSelectedVideoFiles,
         setStrokeColor,
@@ -122,7 +194,10 @@ function CanvasContextProvider(props) {
         setWithTextStroke,
         setWithWordAnimation,
         setWordColor,
+        setWordsData,
         setWordSpace,
+        setXAxis,
+        setYAxis,
         setYOUR_AUDIO_FILES,
         setYOUR_PRESETS,
         setYourAudioFiles,
@@ -138,21 +213,14 @@ function CanvasContextProvider(props) {
         withTextStroke,
         withWordAnimation,
         wordColor,
+        wordsData,
         wordSpace,
+        xAxis,
+        yAxis,
         YOUR_AUDIO_FILES,
         YOUR_PRESETS,
-        // currentAudioTime,
-        // setCurrentAudioTime,
-
         yourAudioFiles,
-        wordsData,
-        setWordsData,
         yourVideoFiles,
-
-        xAxis,
-        setXAxis,
-        yAxis,
-        setYAxis,
     };
     return <CanvasContext.Provider value={GLOBAL}>{props.children}</CanvasContext.Provider>;
 }

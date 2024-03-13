@@ -7,19 +7,8 @@ import AudioCardItem from "./components/AudioCardItem";
 import TimerContextProvider from "../../Context/TimerContextProvider";
 
 export default function Audio(props) {
-    const {
-        audioElRef,
-        audioFileInputRef,
-        baseUrl,
-        previewAudio,
-        setPreviewAudio,
-        setWordsData,
-        setYOUR_AUDIO_FILES,
-        wordsData,
-        YOUR_AUDIO_FILES,
-        currentAudioFile,
-        setCurrentAudioFile,
-    } = useContext(CanvasContext);
+    const { audioElRef, audioFileInputRef, baseUrl, currentAudioFile, setCurrentAudioFile, setWordsData, setYOUR_AUDIO_FILES, wordsData, YOUR_AUDIO_FILES } =
+        useContext(CanvasContext);
     console.log("Audio");
 
     const [uploadingAudioFiles, setUploadingAudioFiles] = useState(false);

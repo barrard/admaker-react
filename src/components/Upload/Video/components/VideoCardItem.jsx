@@ -1,20 +1,32 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
-import { Trash2, Play } from "lucide-react";
+import { Trash2, Play, Pause } from "lucide-react";
 import { BasicBtn } from "../../../Button";
 
 import CanvasContext from "../../../Context/CanvasContext";
 
 export default function VideoCardItem({ file = {} }) {
-    const { setSelectedVideoFiles, setPreviewVideos } = useContext(CanvasContext);
+    const { setSelectedVideoFiles, setPreviewVideos, handleTogglePlay, previewVideo, isVideoPlaying } = useContext(CanvasContext);
     const [enabledVideo, setEnabledVideo] = useState(true);
+    const [isCurrentVideo, setIsCurrentVideo] = useState(false);
+
+    useEffect(() => {
+        debugger;
+        if (previewVideo?.name === file?.name) {
+            setIsCurrentVideo(true);
+        } else {
+            setIsCurrentVideo(false);
+        }
+    }, [previewVideo]);
 
     function removeVideoFile(file) {
         setSelectedVideoFiles((selectedVideoFiles) => selectedVideoFiles.filter((sv) => sv.name != file.name));
         setPreviewVideos((previewVideos) => previewVideos.filter((pu) => pu.name !== file.name));
     }
+
+    let videoIsPlaying = !isCurrentVideo ? false : isVideoPlaying && isCurrentVideo ? true : false;
 
     return (
         <Card className="border border-green-500 relative">
@@ -33,7 +45,11 @@ export default function VideoCardItem({ file = {} }) {
             </CardHeader>
             <CardFooter className={"border border-blue-300 p-1"}>
                 <BasicBtn onClick={() => removeVideoFile(file)} text={<Trash2 className="text-red-500" size={18} />} title="Delete" />
-                <BasicBtn onClick={() => console.log("videoFile.originalFileName")} text={<Play className="text-green-500" size={18} />} title="Play" />
+                <BasicBtn
+                    onClick={() => handleTogglePlay({ videoFile: file })}
+                    text={videoIsPlaying ? <Pause className="text-yellow-500" size={18} /> : <Play className="text-green-500" size={18} />}
+                    title={videoIsPlaying ? "Pause" : "Play"}
+                />
             </CardFooter>
         </Card>
     );

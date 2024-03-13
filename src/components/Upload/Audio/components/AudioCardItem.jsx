@@ -22,6 +22,7 @@ export default function AudioCardItem({ audioFile = {} }) {
         sourceVideoRef,
         wordsData,
         YOUR_AUDIO_FILES,
+        handleTogglePlay,
     } = useContext(CanvasContext);
     const [isExpanded, setIsExpanded] = useState(false); // Initially collapsed
     const [enabledAudio, setEnabledAudio] = useState(audioFile.enabled);
@@ -48,6 +49,7 @@ export default function AudioCardItem({ audioFile = {} }) {
             setIsCurrentAudio(false);
         }
     }, [currentAudioFile]);
+
     let audioIsPlaying = !isCurrentAudio ? false : isAudioPlaying && isCurrentAudio ? true : false;
 
     return (
@@ -79,42 +81,14 @@ export default function AudioCardItem({ audioFile = {} }) {
                 {audioFile.source && (
                     <>
                         <BasicBtn
-                            // id="clearAudioFilesList"
                             onClick={() => {
-                                console.log(audioFile.originalFileName);
-                                if (isAudioPlaying) {
-                                    setIsAudioPlaying(false);
-                                    audioElRef.current.pause();
-                                    audioElRef.current.currentTime = 0;
-                                    if (sourceVideoRef?.current) {
-                                        try {
-                                            // sourceVideoRef.current.currentTime = 0;
-                                            sourceVideoRef.current.pause();
-                                        } catch (err) {
-                                            console.error(err);
-                                        }
-                                    }
-                                } else {
-                                    setCurrentAudioFile(audioFile);
-                                    setWordsData(audioFile.audioJson);
-                                    setIsAudioPlaying(true);
-                                    audioElRef.current.play();
-                                    //set video to tim 0 and audio to time 0 and play both
-                                    if (sourceVideoRef?.current) {
-                                        try {
-                                            sourceVideoRef.current.currentTime = 0;
-                                            sourceVideoRef.current.play();
-                                        } catch (err) {
-                                            console.error(err);
-                                        }
-                                    }
-                                }
+                                handleTogglePlay({ audioFile });
                             }}
                             text={audioIsPlaying ? <Pause className="text-yellow-500" size={18} /> : <Play className="text-green-500" size={18} />}
                             title={audioIsPlaying ? "Pause" : "Play"}
                         />
                         <span className="pl-2">
-                            {audioIsPlaying ? currentAudioTime.toFixed(2) : 0.0} : {audioCardElRef.current?.duration.toFixed(2)}
+                            {audioIsPlaying ? currentAudioTime.toFixed(2) : "0.00"} : {audioCardElRef.current?.duration.toFixed(2)}
                         </span>
                         <audio src={audioFile.source} ref={audioCardElRef} />
                     </>

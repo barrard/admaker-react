@@ -64,64 +64,19 @@ export default function canvasControls(props) {
         wordColor,
         YOUR_AUDIO_FILES,
         YOUR_PRESETS,
+        isPlaying,
+        setIsPlaying,
+        handleTogglePlay,
+        restartVideoAndAudio,
+        restartVideo,
+        restartAudio,
     } = useContext(CanvasContext) || {};
     // console.log("canvasControls");
-    const [isPlaying, setIsPlaying] = useState(false); //DO I REALLY NEED THIS?
+
     const [blobUrls, setBlobUrls] = useState([]);
     const [tab, setTab] = useState("control");
 
     const mediaRecorder = useRef();
-
-    const handleTogglePlay = () => {
-        debugger;
-        if (!currentAudioFile?.source || !audioElRef?.current) {
-            console.log("debug");
-            return;
-        }
-        if (sourceVideoRef.current) {
-            if (isPlaying) {
-                setIsPlaying(false);
-
-                if (isAudioPlaying) {
-                    audioElRef?.current?.pause();
-                    setIsAudioPlaying(false);
-                }
-                if (isVideoPlaying) {
-                    sourceVideoRef.current.pause();
-                    setIsVideoPlaying(false);
-                }
-            } else {
-                sourceVideoRef.current.play();
-                audioElRef?.current?.play();
-                setIsAudioPlaying(true);
-                setIsVideoPlaying(true);
-                setIsPlaying(true);
-            }
-        }
-    };
-
-    function restartVideoAndAudio() {
-        restartAudio();
-        restartVideo();
-    }
-
-    function restartVideo() {
-        if (sourceVideoRef?.current) {
-            sourceVideoRef.current.pause();
-            sourceVideoRef.current.currentTime = 0;
-            sourceVideoRef.current.play();
-            setIsPlaying(true);
-        }
-    }
-
-    function restartAudio() {
-        if (audioElRef?.current) {
-            audioElRef.current.pause();
-            audioElRef.current.currentTime = 0;
-            audioElRef.current.play();
-            setIsPlaying(true);
-        }
-    }
 
     const handleRecord = () => {
         if (!sourceVideoRef.current) {
@@ -315,6 +270,7 @@ export default function canvasControls(props) {
     }
     function handleAudioTimeUpdate() {
         const currentTime = audioElRef.current.currentTime;
+
         setCurrentAudioTime(currentTime);
     }
     useEffect(() => {

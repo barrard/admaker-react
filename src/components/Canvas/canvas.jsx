@@ -67,14 +67,10 @@ export default function Canvas(props) {
     }, [fontSize, wordSpace, fontFamily, textDecoration]);
 
     useEffect(() => {
-        debugger;
         if (loadedVideo && outputCanvasRef.current && canvasCtx && loadedMetaData && sourceVideoRef.current && currentAudioFile?.audioJson?.segments && audioElRef?.current) {
             const canvas = outputCanvasRef.current;
             canvas.width = sourceVideoRef.current.videoWidth * 1;
             canvas.height = sourceVideoRef.current.videoHeight * 1;
-            // console.log(canvas.width, canvas.height);
-            console.log("CALLED ONCE");
-            debugger;
             const wordSegments = wordBreakDown(currentAudioFile?.audioJson?.segments, canvasCtx, context);
 
             drawVideo(wordSegments);
