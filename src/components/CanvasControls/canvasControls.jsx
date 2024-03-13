@@ -18,6 +18,7 @@ export default function canvasControls(props) {
         activeWordColor,
         audioElRef,
         backgroundColor,
+        downloadLinkRefs,
         canvasCtx,
         currentAudioFile,
         currentPrestSettings,
@@ -102,7 +103,7 @@ export default function canvasControls(props) {
                 debugger;
                 const audioFiles = YOUR_AUDIO_FILES.filter((af) => af.enabled);
                 const videoFiles = previewVideos;
-                const textPresets = Object.values(YOUR_PRESETS).filter((preset) => preset.enabled);
+                const textPresets = Object.values(YOUR_PRESETS).filter((preset) => preset.isActiveTextPreset);
                 while (audioIndex < audioFiles.length) {
                     videoIndex = 0;
                     while (videoIndex < videoFiles.length) {
@@ -305,6 +306,10 @@ export default function canvasControls(props) {
         setCurrentVideoTime(0);
     }
 
+    function downloadAll() {
+        console.log(downloadLinkRefs);
+    }
+
     useEffect(() => {
         if (!sourceVideoRef.current) return;
         sourceVideoRef.current?.addEventListener("ended", handleVideoEnded);
@@ -328,15 +333,20 @@ export default function canvasControls(props) {
                 <br />
                 <BasicBtn onClick={handleRecord} text={isRecording ? "Stop" : "Record"} />
                 {/* <audio src={audioFile.source} ref={audioCardElRef} /> */}
-                {previewVideos?.length > 0 && <p>{previewVideos?.length}</p>}
-                {blobUrls.length > 0 &&
-                    blobUrls.map((blobUrl) => {
-                        return (
-                            <React.Fragment key={blobUrl.blobUrl}>
-                                <DownloadItem item={blobUrl} />
-                            </React.Fragment>
-                        );
-                    })}
+                {/* {<p>Videos: {previewVideos?.length}</p>} */}
+                {blobUrls.length > 0 && (
+                    <>
+                        {/* <BasicBtn onClick={downloadAll} text={"DOWNLOAD ALL"} /> */}
+
+                        {blobUrls.map((blobUrl) => {
+                            return (
+                                <React.Fragment key={blobUrl.blobUrl}>
+                                    <DownloadItem blobUrls={blobUrls} setBlobUrls={setBlobUrls} item={blobUrl} />
+                                </React.Fragment>
+                            );
+                        })}
+                    </>
+                )}
             </div>
         ),
 

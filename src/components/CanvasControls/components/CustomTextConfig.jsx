@@ -49,11 +49,16 @@ export default function CustomTextConfig(props) {
         setYAxis,
         wordSpace,
         setWordSpace,
+        isActiveTextPreset,
+        setIsActiveTextPreset,
     } = canvasContext;
 
     const [hasLoadedFirst, setHasLoadedFirst] = useState(false);
     const { tab, setTab } = props || {};
     const [_presetName, _setPresetName] = useState(currentPrestSettings?.presetName !== undefined ? currentPrestSettings?.presetName : presetName);
+    const [_isActiveTextPreset, _setIsActiveTextPreset] = useState(
+        currentPrestSettings?.isActiveTextPreset !== undefined ? currentPrestSettings?.isActiveTextPreset : isActiveTextPreset
+    );
 
     const [_withSingleWord, _setWithSingleWord] = useState(currentPrestSettings?.withSingleWord !== undefined ? currentPrestSettings?.withSingleWord : withSingleWord);
 
@@ -97,6 +102,7 @@ export default function CustomTextConfig(props) {
         xAxis: _xAxis,
         yAxis: _yAxis,
         wordSpace: _wordSpace,
+        isActiveTextPreset: _isActiveTextPreset,
     });
 
     function setToCurrentSettings(_CURRENT_PRESET_DATA) {

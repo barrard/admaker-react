@@ -9,7 +9,7 @@ import { writeToLocalStorage } from "../../../../../utils";
 export default function PresetCardItem({ preset = {}, presetName = "presetName", setTab, tab }) {
     const canvasContext = useContext(CanvasContext);
     const { YOUR_PRESETS, setYOUR_PRESETS, currentPrestSettings, setCurrentPrestSettings } = canvasContext;
-    const [enabledText, setEnabledText] = useState(preset.enabled);
+    const [enabledText, setEnabledText] = useState(preset.isActiveTextPreset);
 
     function removePreset(presetName) {
         console.log("Remove  " + presetName);
@@ -38,7 +38,7 @@ export default function PresetCardItem({ preset = {}, presetName = "presetName",
 
     useEffect(() => {
         setYOUR_PRESETS((presets) => {
-            presets[presetName].enabled = enabledText;
+            presets[presetName].isActiveTextPreset = enabledText;
             return { ...presets };
         });
     }, [enabledText]);

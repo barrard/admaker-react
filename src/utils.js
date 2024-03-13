@@ -42,7 +42,7 @@ export const defaultPresets = {
         xAxis: 73,
         yAxis: 300,
         wordSpace: 10,
-        enabled: true,
+        isActiveTextPreset: true,
     },
     YUM2: {
         activeWordColor: "#fcdc00",
@@ -61,7 +61,7 @@ export const defaultPresets = {
         xAxis: 73,
         yAxis: 300,
         wordSpace: 20,
-        enabled: true,
+        isActiveTextPreset: true,
     },
     YUM3: {
         activeWordColor: "#fcdc00",
@@ -80,6 +80,6 @@ export const defaultPresets = {
         xAxis: 73,
         yAxis: 300,
         wordSpace: 20,
-        enabled: true,
+        isActiveTextPreset: true,
     },
 };

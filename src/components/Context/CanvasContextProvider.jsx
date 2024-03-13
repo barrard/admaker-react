@@ -35,7 +35,7 @@ function CanvasContextProvider(props) {
     const [selectedAudioFiles, setSelectedAudioFiles] = useState([]);
     const [currentAudioFile, setCurrentAudioFile] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
-
+    const [downloadLinkRefs, setDownloadLinksRefs] = useState([]);
     const [previewVideo, setPreviewVideo] = useState(null);
 
     const [YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES] = useState(readFromLocalStorage("audioFiles", []));
@@ -45,7 +45,7 @@ function CanvasContextProvider(props) {
 
     const [YOUR_PRESETS, setYOUR_PRESETS] = useState(readFromLocalStorage("presets", []));
     const [currentPrestSettings, setCurrentPrestSettings] = useState(null);
-
+    const [isActiveTextPreset, setIsActiveTextPreset] = useState(true);
     const [xAxis, setXAxis] = useState(50);
     const [yAxis, setYAxis] = useState(50);
 
@@ -138,6 +138,8 @@ function CanvasContextProvider(props) {
 
     const GLOBAL = {
         activeWordColor,
+        downloadLinkRefs,
+        setDownloadLinksRefs,
         audioElRef,
         audioFileInputRef,
         backgroundColor,
@@ -147,6 +149,8 @@ function CanvasContextProvider(props) {
         currentAudioFile,
         currentPrestSettings,
         fontFamily,
+        isActiveTextPreset,
+        setIsActiveTextPreset,
         fontSize,
         handleTogglePlay,
         isAudioPlaying,
