@@ -27,7 +27,7 @@ export default function canvasControls(props) {
         isVideoPlaying,
         loadedMetaData,
         loadedVideo,
-        previewUrls,
+        previewVideos,
         previewVideo,
         setActiveWordColor,
         setBackgroundColor,
@@ -146,7 +146,7 @@ export default function canvasControls(props) {
                 let currentPresetIndex;
                 debugger;
                 const audioFiles = YOUR_AUDIO_FILES.filter((af) => af.enabled);
-                const videoFiles = previewUrls;
+                const videoFiles = previewVideos;
                 const textPresets = Object.values(YOUR_PRESETS).filter((preset) => preset.enabled);
                 while (audioIndex < audioFiles.length) {
                     videoIndex = 0;
@@ -165,7 +165,7 @@ export default function canvasControls(props) {
                             setCurrentPrestSettings(preset);
 
                             const videoFile = videoFiles[videoIndex];
-                            setPreviewVideo(videoFile.videoUrl);
+                            setPreviewVideo(videoFile);
                             if (currentVideoIndex !== videoIndex || currentAudioIndex !== audioIndex) {
                                 await timeWait(2);
                             }
@@ -372,7 +372,7 @@ export default function canvasControls(props) {
                 <br />
                 <BasicBtn onClick={handleRecord} text={isRecording ? "Stop" : "Record"} />
                 {/* <audio src={audioFile.source} ref={audioCardElRef} /> */}
-                {previewUrls?.length > 0 && <p>{previewUrls?.length}</p>}
+                {previewVideos?.length > 0 && <p>{previewVideos?.length}</p>}
                 {blobUrls.length > 0 &&
                     blobUrls.map((blobUrl) => {
                         return (
@@ -395,7 +395,7 @@ export default function canvasControls(props) {
             mediaRecorder?.current?.state,
             blobUrls,
             setBlobUrls,
-            previewUrls,
+            previewVideos,
             YOUR_AUDIO_FILES,
             YOUR_PRESETS,
             audioElRef?.current?.source,
@@ -466,7 +466,7 @@ export default function canvasControls(props) {
                     id="sourceVideo"
                     autoPlay={false}
                     controls
-                    src={previewVideo || ""}
+                    src={previewVideo?.videoUrl || ""}
                 ></video>
                 <audio src={currentAudioFile?.source} style={{ visibility: "hidsden" }} ref={audioElRef} id="audioElement" controls></audio>
             </div>

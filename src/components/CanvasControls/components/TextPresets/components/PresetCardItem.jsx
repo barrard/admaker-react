@@ -48,13 +48,7 @@ export default function PresetCardItem({ preset = {}, presetName = "presetName",
             <CardHeader className={"border border-red-300 p-1 cursor-pointer"} onClick={() => setAsCurrentPreset(presetName)}>
                 <CardTitle className="text-sm font-semibold">{presetName}</CardTitle>
 
-                {/* <CardDescription className="overflow-hidden">
-                    <video
-                        className="w-28 m-2"
-                        src={preset.videoUrl}
-                        // width="75"
-                        // controls
-                    />
+                {/* <CardDescription className="overflow-hidden">                  
                 </CardDescription> */}
             </CardHeader>
             <CardFooter className={"border border-blue-300 p-1"}>

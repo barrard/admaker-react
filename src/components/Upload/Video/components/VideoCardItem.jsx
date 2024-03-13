@@ -8,12 +8,12 @@ import { BasicBtn } from "../../../Button";
 import CanvasContext from "../../../Context/CanvasContext";
 
 export default function VideoCardItem({ file = {} }) {
-    const { YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES } = useContext(CanvasContext);
+    const { setSelectedVideoFiles, setPreviewVideos } = useContext(CanvasContext);
     const [enabledVideo, setEnabledVideo] = useState(true);
 
-    function removeVideoFile(fileName) {
-        console.log("Remove  " + fileName);
-        setYOUR_VIDEO_FILES(YOUR_VIDEO_FILES.filter((af) => af.originalFileName != fileName));
+    function removeVideoFile(file) {
+        setSelectedVideoFiles((selectedVideoFiles) => selectedVideoFiles.filter((sv) => sv.name != file.name));
+        setPreviewVideos((previewVideos) => previewVideos.filter((pu) => pu.name !== file.name));
     }
 
     return (
@@ -32,7 +32,7 @@ export default function VideoCardItem({ file = {} }) {
                 </CardDescription>
             </CardHeader>
             <CardFooter className={"border border-blue-300 p-1"}>
-                <BasicBtn onClick={() => removeVideoFile("videoFile.originalFileName")} text={<Trash2 className="text-red-500" size={18} />} title="Delete" />
+                <BasicBtn onClick={() => removeVideoFile(file)} text={<Trash2 className="text-red-500" size={18} />} title="Delete" />
                 <BasicBtn onClick={() => console.log("videoFile.originalFileName")} text={<Play className="text-green-500" size={18} />} title="Play" />
             </CardFooter>
         </Card>

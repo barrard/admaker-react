@@ -15,10 +15,8 @@ export default function Audio(props) {
         setPreviewAudio,
         setWordsData,
         setYOUR_AUDIO_FILES,
-        setYOUR_VIDEO_FILES,
         wordsData,
         YOUR_AUDIO_FILES,
-        YOUR_VIDEO_FILES,
         currentAudioFile,
         setCurrentAudioFile,
     } = useContext(CanvasContext);

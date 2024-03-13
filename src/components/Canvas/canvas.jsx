@@ -14,7 +14,6 @@ export default function Canvas(props) {
         isPlaying,
         loadedMetaData,
         loadedVideo,
-        previewVideo,
         setCanvasCtx,
         setCurrentPrestSettings,
         setFontFamily,
@@ -68,6 +67,7 @@ export default function Canvas(props) {
     }, [fontSize, wordSpace, fontFamily, textDecoration]);
 
     useEffect(() => {
+        debugger;
         if (loadedVideo && outputCanvasRef.current && canvasCtx && loadedMetaData && sourceVideoRef.current && currentAudioFile?.audioJson?.segments && audioElRef?.current) {
             const canvas = outputCanvasRef.current;
             canvas.width = sourceVideoRef.current.videoWidth * 1;

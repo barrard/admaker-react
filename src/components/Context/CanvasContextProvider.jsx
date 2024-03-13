@@ -38,8 +38,8 @@ function CanvasContextProvider(props) {
     const [previewVideo, setPreviewVideo] = useState(null);
     const [previewAudio, setPreviewAudio] = useState(null);
     const [YOUR_AUDIO_FILES, setYOUR_AUDIO_FILES] = useState(readFromLocalStorage("audioFiles", []));
-    const [YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES] = useState(readFromLocalStorage("videoFiles", []));
-    const [previewUrls, setPreviewUrls] = useState([]); // State to manage VIDEO preview URLs
+    // const [YOUR_VIDEO_FILES, setYOUR_VIDEO_FILES] = useState(readFromLocalStorage("videoFiles", []));
+    const [previewVideos, setPreviewVideos] = useState([]); // State to manage VIDEO preview URLs
     const [isRecording, setIsRecording] = useState(false);
 
     const [YOUR_PRESETS, setYOUR_PRESETS] = useState(readFromLocalStorage("presets", []));
@@ -69,8 +69,8 @@ function CanvasContextProvider(props) {
     const GLOBAL = {
         isRecording,
         setIsRecording,
-        previewUrls,
-        setPreviewUrls,
+        previewVideos,
+        setPreviewVideos,
         activeWordColor,
         audioElRef,
         audioFileInputRef,
@@ -125,7 +125,6 @@ function CanvasContextProvider(props) {
         setWordSpace,
         setYOUR_AUDIO_FILES,
         setYOUR_PRESETS,
-        setYOUR_VIDEO_FILES,
         setYourAudioFiles,
         setYourVideoFiles,
         sourceVideoRef,
@@ -142,7 +141,6 @@ function CanvasContextProvider(props) {
         wordSpace,
         YOUR_AUDIO_FILES,
         YOUR_PRESETS,
-        YOUR_VIDEO_FILES,
         // currentAudioTime,
         // setCurrentAudioTime,
 
