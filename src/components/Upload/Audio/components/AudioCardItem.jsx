@@ -2,11 +2,12 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
-import { Trash2, Play, Pause } from "lucide-react";
+import { Trash2, Play, Pause, Pencil, Check, Ban } from "lucide-react";
 import { BasicBtn } from "../../../Button";
 
 import CanvasContext from "../../../Context/CanvasContext";
 import TimerContext from "../../../Context/TimerContext";
+import MyBadge from "../../../Badge";
 
 export default function AudioCardItem({ audioFile = {} }) {
     const audioCardElRef = useRef();
@@ -27,6 +28,7 @@ export default function AudioCardItem({ audioFile = {} }) {
     const [isExpanded, setIsExpanded] = useState(false); // Initially collapsed
     const [enabledAudio, setEnabledAudio] = useState(audioFile.enabled);
     const [isCurrentAudio, setIsCurrentAudio] = useState(false);
+    const [editText, setEditText] = useState(false);
     // const [currentTime, setCurrentTime] = useState(0);
     function removeAudioFile(fileName) {
         console.log("Remove  " + fileName);
@@ -52,19 +54,54 @@ export default function AudioCardItem({ audioFile = {} }) {
 
     let audioIsPlaying = !isCurrentAudio ? false : isAudioPlaying && isCurrentAudio ? true : false;
 
+    function handleSaveEditedText() {
+        setEditText(false);
+    }
+    function handleCancelEditedText() {
+        setEditText(false);
+    }
+
+    console.log(audioFile.audioJson);
+    console.log(YOUR_AUDIO_FILES);
     return (
         <Card className={`border border-green-500 relative ${isCurrentAudio ? " bg-green-500" : ""}`}>
             <Switch className="top-1 right-1 absolute" checked={enabledAudio} onCheckedChange={() => setEnabledAudio(!enabledAudio)} />
-            <CardHeader className={"border border-red-300 p-1"} onClick={() => setIsExpanded(!isExpanded)}>
-                <CardTitle className="text-sm font-semibold">{audioFile.originalFileName}</CardTitle>
+            <CardHeader className={"border border-red-300 p-1 "}>
+                <CardTitle className="text-sm font-semibold cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+                    {audioFile.originalFileName}
+                </CardTitle>
 
                 {isExpanded && (
                     <CardDescription className="overflow-hidden">
-                        {audioFile.audioJson.segments.map((segment) => {
-                            const { end, text } = segment;
+                        {!editText &&
+                            audioFile.audioJson.segments.map((segment) => {
+                                const { words } = segment;
 
-                            return <p key={end}>{text}</p>;
-                        })}
+                                return words.map((_word, iWord) => {
+                                    const { end, word } = _word;
+                                    return (
+                                        <React.Fragment key={end}>
+                                            <span>{word}</span>
+                                            {iWord === words.length - 1 && <br />}
+                                        </React.Fragment>
+                                    );
+                                });
+                            })}
+
+                        {editText &&
+                            audioFile.audioJson.segments.map((segment, iSeg) => {
+                                const { words } = segment;
+
+                                return words.map((_word, iWord) => {
+                                    const { end, word } = _word;
+                                    return (
+                                        <React.Fragment key={end}>
+                                            <MyBadge audioFile={audioFile} iSeg={iSeg} iWord={iWord} word={word} audioFile={audioFile} />
+                                            {iWord === words.length - 1 && <br />}
+                                        </React.Fragment>
+                                    );
+                                });
+                            })}
                     </CardDescription>
                 )}
             </CardHeader>
@@ -72,6 +109,16 @@ export default function AudioCardItem({ audioFile = {} }) {
                 <p>Card Content</p>
             </CardContent> */}
             <CardFooter className={"border border-blue-300 p-1"}>
+                <BasicBtn
+                    onClick={() => {
+                        setEditText((edit) => !edit);
+                        if (!isExpanded) {
+                            setIsExpanded(true);
+                        }
+                    }}
+                    text={<Pencil className={`text-${editText ? "red" : "blue"}-500`} size={18} />}
+                    title={editText ? "Done" : "Edit"}
+                />
                 <BasicBtn
                     // id="clearAudioFilesList"
                     onClick={() => removeAudioFile(audioFile.originalFileName)}

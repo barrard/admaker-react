@@ -26,9 +26,9 @@ export default function MainContainer() {
                     <VideoUpload />
                 </TwoCol>
 
-                <div className="columns-1 border border-f00">
+                {/* <div className="columns-1 border border-f00">
                     <button id="makeAllFiles">Make All Files</button>
-                </div>
+                </div> */}
             </div>
         </CanvasContextProvider>
     );
