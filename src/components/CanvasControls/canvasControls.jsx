@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef, useEffect, useMemo } from "react";
 import CanvasContext from "../Context/CanvasContext";
-import TimerContext from "../Context/TimerContext";
+// import TimerContext from "../Context/TimerContext";
 
 import { BasicBtn } from "../Button";
 import TextPresets from "./components/TextPresets";
@@ -12,7 +12,7 @@ import DownloadItem from "./components/DownloadItem";
 // let mediaRecorder;
 // let recordedChunks = [];
 export default function canvasControls(props) {
-    const { setCurrentVideoTime, currentVideoTime, setCurrentAudioTime } = useContext(TimerContext) || {};
+    // const { setCurrentVideoTime, currentVideoTime, setCurrentAudioTime } = useContext(TimerContext) || {};
     const {
         // wordSpace,
         activeWordColor,
@@ -273,7 +273,7 @@ export default function canvasControls(props) {
     function handleAudioTimeUpdate() {
         const currentTime = audioElRef.current.currentTime;
 
-        setCurrentAudioTime(currentTime);
+        // setCurrentAudioTime(currentTime);
     }
     useEffect(() => {
         if (!audioElRef.current) return;
@@ -291,7 +291,7 @@ export default function canvasControls(props) {
     //VIDEO EVENTS
 
     function onVideoTimeUpdate(event) {
-        setCurrentVideoTime(sourceVideoRef.current.currentTime); //Change #current to currentTime
+        // setCurrentVideoTime(sourceVideoRef.current.currentTime); //Change #current to currentTime
         setVideoDuration(sourceVideoRef.current.duration);
     }
 
@@ -304,7 +304,7 @@ export default function canvasControls(props) {
         setIsPlaying(false);
         setIsVideoPlaying(false);
         sourceVideoRef.current.currentTime = 0;
-        setCurrentVideoTime(0);
+        // setCurrentVideoTime(0);
     }
 
     function downloadAll() {
@@ -370,14 +370,14 @@ export default function canvasControls(props) {
         ]
     );
 
-    const CurrentTimeMemo = useMemo(
-        () => (
-            <p>
-                <span id="currentVideoTime">{currentVideoTime}</span>/ <span id="videoDuration">{videoDuration || 0}</span>
-            </p>
-        ),
-        [currentVideoTime, videoDuration]
-    );
+    // const CurrentTimeMemo = useMemo(
+    //     () => (
+    //         <p>
+    //             <span id="currentVideoTime">{currentVideoTime}</span>/ <span id="videoDuration">{videoDuration || 0}</span>
+    //         </p>
+    //     ),
+    //     [currentVideoTime, videoDuration]
+    // );
 
     const CustomTextMemo = useMemo(() => <CustomTextConfig tab={tab} setTab={setTab} />, []);
 
@@ -393,7 +393,7 @@ export default function canvasControls(props) {
                             <>
                                 <div className="border border-f00">
                                     {MainCanvasControlsMemo}
-                                    {CurrentTimeMemo}
+                                    {/* {CurrentTimeMemo} */}
                                 </div>
                             </>
                         ),

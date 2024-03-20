@@ -119,7 +119,6 @@ export default function CustomTextConfig(props) {
         // const CURRENT_PRESET_DATA = readFromLocalStorage("currentPresetSettings");
         setToCurrentSettings(CURRENT_PRESET_DATA.current);
         const YOUR_PRESETS = readFromLocalStorage("presets");
-        console.log({ YOUR_PRESETS });
         setYOUR_PRESETS(YOUR_PRESETS);
         setHasLoadedFirst(true);
         return () => {
@@ -246,8 +245,9 @@ export default function CustomTextConfig(props) {
                     </label>
                     <Input name="line-height" type="number" placeholder={"Line Height"} value={_lineHeight} onChange={(e) => _setLineHeight(e.target.value)} />
                 </div>
-                <TextSpaceSelect wordSpace={_wordSpace} setWordSpace={_setWordSpace} />
             </TwoCol>
+            <TextSpaceSelect wordSpace={_wordSpace} setWordSpace={_setWordSpace} />
+
             {/* WithWord Animation */}
             <span className="flex border justify-center items-baseline">
                 {/* Adjust label text as needed */}

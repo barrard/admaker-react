@@ -7,7 +7,7 @@ export default function ControlTabs({ tabs = [], contents = [], setTab, tab }) {
     };
 
     return (
-        <Tabs value={tab} onValueChange={onTabChange} defaultValue={tab} className="w-[400px] border border-green-500">
+        <Tabs value={tab} onValueChange={onTabChange} defaultValue={tab} className="w-[100%]">
             <TabsList>
                 {tabs.map((tab, i) => {
                     const { name, value } = tab;

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,11 +8,13 @@ import CanvasContext from "../Context/CanvasContext";
 import { BasicBtn } from "../Button";
 
 export default function EditWordModal(props) {
-    const { word, audioFile, iSeg, iWord } = props;
+    const { word, audioFile, iSeg, iWord, open, setOpen } = props;
     const { setYOUR_AUDIO_FILES, YOUR_AUDIO_FILES } = useContext(CanvasContext);
 
     const [currentWord, setCurrentWord] = useState(word); // Initial word
     const [newWord, setNewWord] = useState(word);
+
+    const saveBtnRef = useRef();
 
     function handleSaveNewWord() {
         setCurrentWord(newWord);
@@ -26,11 +28,23 @@ export default function EditWordModal(props) {
         YOUR_AUDIO_FILES[audioIndex] = editedAudio;
         //save as new array
         setYOUR_AUDIO_FILES([...YOUR_AUDIO_FILES]);
+        setOpen(false);
+    }
+
+    function handleChange(e) {
+        setNewWord(e.target.value);
+    }
+
+    function handleKeyDown(e) {
+        if (e.key === "Enter") {
+            setOpen(false);
+            handleSaveNewWord();
+        }
     }
 
     return (
-        <Dialog>
-            <DialogTrigger>{word}</DialogTrigger>
+        <Dialog open={open}>
+            <DialogTrigger onClick={() => setOpen((o) => !o)}>{word}</DialogTrigger>
 
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
@@ -42,15 +56,15 @@ export default function EditWordModal(props) {
                         <Label htmlFor="newWord" className="sr-only">
                             New Word
                         </Label>
-                        <Input id="newWord" type="text" placeholder="Edit Word" value={newWord} onChange={(e) => setNewWord(e.target.value)} />
+                        <Input id="newWord" type="text" placeholder="Edit Word" value={newWord} onKeyDown={handleKeyDown} onChange={handleChange} />
                     </div>
                 </div>
                 <DialogFooter className="sm:justify-start">
-                    <DialogClose>
-                        <BasicBtn onClick={handleSaveNewWord} text={<Check className="text-green-500" size={18} />} title="Save" />
+                    <DialogClose onClick={handleSaveNewWord} ref={saveBtnRef}>
+                        <BasicBtn text={<Check className="text-green-500" size={18} />} title="Save" />
                     </DialogClose>
                     <DialogClose>
-                        <BasicBtn text={<Ban className="text-red-500" size={18} />} title="Cancel" />
+                        <BasicBtn onClick={() => setOpen(false)} text={<Ban className="text-red-500" size={18} />} title="Cancel" />
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

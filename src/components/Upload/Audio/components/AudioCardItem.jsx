@@ -61,8 +61,6 @@ export default function AudioCardItem({ audioFile = {} }) {
         setEditText(false);
     }
 
-    console.log(audioFile.audioJson);
-    console.log(YOUR_AUDIO_FILES);
     return (
         <Card className={`border border-green-500 relative ${isCurrentAudio ? " bg-green-500" : ""}`}>
             <Switch className="top-1 right-1 absolute" checked={enabledAudio} onCheckedChange={() => setEnabledAudio(!enabledAudio)} />

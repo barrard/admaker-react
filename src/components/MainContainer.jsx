@@ -12,23 +12,20 @@ export default function MainContainer() {
             <div className="container">
                 {/* 2 columns  */}
                 <TwoCol>
-                    {/* Canvas element*/}
-                    <Canvas />
-                    {/* canvas controls */}
-                    <TimerContextProvider>
-                        <CanvasControls />
-                    </TimerContextProvider>
-                </TwoCol>
-                <TwoCol>
                     {/* <!-- AUDIO UPLOAD --> */}
                     <AudioUpload />
                     {/* <!-- VIDEO UPLOAD --> */}
                     <VideoUpload />
                 </TwoCol>
 
-                {/* <div className="columns-1 border border-f00">
-                    <button id="makeAllFiles">Make All Files</button>
-                </div> */}
+                <TwoCol>
+                    {/* Canvas element*/}
+                    <Canvas />
+                    {/* canvas controls */}
+                    {/* <TimerContextProvider> */}
+                    <CanvasControls />
+                    {/* </TimerContextProvider> */}
+                </TwoCol>
             </div>
         </CanvasContextProvider>
     );
