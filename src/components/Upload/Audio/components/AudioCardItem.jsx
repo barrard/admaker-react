@@ -94,7 +94,7 @@ export default function AudioCardItem({ audioFile = {} }) {
                                     const { end, word } = _word;
                                     return (
                                         <React.Fragment key={end}>
-                                            <MyBadge audioFile={audioFile} iSeg={iSeg} iWord={iWord} word={word} audioFile={audioFile} />
+                                            <MyBadge audioFile={audioFile} iSeg={iSeg} iWord={iWord} word={word} />
                                             {iWord === words.length - 1 && <br />}
                                         </React.Fragment>
                                     );
